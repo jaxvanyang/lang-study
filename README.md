@@ -2,15 +2,16 @@
 A repository used to study several language
 
 ## Repository Structure
-- [c](c) C\C++  
+- [c](c)  
+    存放 C\C++ 的代码
 
-- [java](java) Java  
+- [java](java)
 
-- [js](js) JavaScript  
+- [js](js)  
 
-- [kt](kt) Kotlin  
+- [kt](kt)  
 
-- [py](python) Python  
+- [py](python)  
 
 - clean.ps1  
 
