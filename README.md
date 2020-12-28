@@ -2,17 +2,14 @@
 A repository used to study several language
 
 ## Repository Structure
-- [c](c)  
-    存放 C\C++ 的代码
+- [C\C++](c-cpp)  
 
-- [java](java)
+- [Java](java)  
 
-- [js](js)  
+- [JavaScript](javascript)  
 
-- [kt](kt)  
+- [Kotlin](kotlin)  
 
-- [py](python)  
+- [Powershell](powershell)  
 
-- clean.ps1  
-
-- README.md  
+- [Python](python)  
