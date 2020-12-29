@@ -1,5 +1,5 @@
 import sys
-sys.path[0] = 'D:/repos/lang-study/python'
+sys.path[0] = '/repos/lang-study/python'
 from file.data import *
 from algorithms.sort import * 
 
