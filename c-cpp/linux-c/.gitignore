@@ -1,0 +1,12 @@
+# Direcotry
+object/
+out/
+
+# data
+data
+data.in
+input
+stats.data
+
+# test
+test.c
