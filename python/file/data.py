@@ -1,7 +1,8 @@
 from os import sep
 import random
 
-TMP_DIR = 'D:/repos/lang-study/tmp/'
+# TMP_DIR = 'D:/repos/lang-study/tmp/'
+TMP_DIR = '/repos/lang-study/tmp/'
 
 
 def get_random_int_list(size: int = 100, min: int = 0, max: int = 100):
@@ -42,8 +43,8 @@ def main():
     name_1 = 'data-1'
     name_2 = 'data-2'
     list_1, list_2 = get_random_int_list(), get_random_int_list()
-    # write_list_to_file(list_1, name_1, '\n')
-    # write_list_to_file(list_2, name_2, '\n')
+    write_list_to_file(list_1, name_1, '\n')
+    write_list_to_file(list_2, name_2, '\n')
     print(compare_file(name_1, name_2))
 
 
