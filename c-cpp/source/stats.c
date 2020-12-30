@@ -1,7 +1,7 @@
-// #include <stdio.h>
-#include "stats.h"
-// #include "statistic.h"
-// #include "helper.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include "helper.h"
+#include "statistic.h"
 
 int main(int argc, char *argv[]) {
 

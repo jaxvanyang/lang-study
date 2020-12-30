@@ -11,3 +11,18 @@
 - [ ] 编写按选项编译并自动重命名的脚本  
 
 - [ ] 自定义 VS Code 的 C/C++ 格式化程序  
+
+- [ ] 重写 writeInputToFile()  
+    ```cpp
+    source/helper.cc:92:29: warning: ISO C++ forbids converting a string constant to ‘char*’ [-Wwrite-strings]
+    92 |     return writeInputToFile("input");
+    ```
+
+- [ ] 将对象文件输出到 `c-cpp/`  
+
+- [ ] 遵循注释规范  
+
+## 待考
+- [ ] 因为对象文件路径不在主目录下，每次 `make` 都会编译所有文件，解决办法待考  
+
+- [ ] gcc 和 g++ 的区别  

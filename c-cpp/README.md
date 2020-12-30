@@ -10,6 +10,8 @@
 
 3. C++ 源文件的扩展名统一命名为 `.cc`  
 
+4. 变量命名使用小写加下划线命名  
+
 
 ## File structure
 - [dependencies](dependencies)  
