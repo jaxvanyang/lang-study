@@ -1,36 +1,47 @@
-# Learn_C
+# C/C++ in lang-study
 
-#### 介绍
-用来学习 C\C++ 的仓库
+## 简介
+用来学习 C/C++ 的仓库
 
-#### 软件架构
-采用多目录结构，头文件和源文件分开存放
-使用 make 进行编译、调试项目
+## 规范 & 要求
+1. Makefile 的 command 必须以 **TAB** 开头  
 
+2. 编译命令一般将参数写在前面，重命名和操作的文件写在后面  
 
-#### 安装教程
-
-
-
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+3. C++ 源文件的扩展名统一命名为 `.cc`  
 
 
-#### 特技
+## File structure
+- [dependencies](dependencies)  
+	Used to store external dependencies  
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+- [header](header)  
+	Used to store header file  
+
+- [source](source)  
+	Used to store source file  
+
+- [tmp](tmp)  
+	Used to store temporary file include object file  
+
+- Makefile  
+	Used to manage and compile this project
+
+## Make options
+A breif introduction of what we can make from this project.  
+
+1. `make linear`  
+	You can use this to built a CTI to calculate some linear algebra.  
+
+## 日志
+- Makefile 可使用 `VPATH` 添加文件的搜索路径，路径之间用冒号分隔 `:`  
+
+- gcc 不能指定源文件和对象文件的搜索路径  
+
+- gcc 可以使用 `-o` 参数指定路径  
+
+- 自己编写命令后，make 貌似就不能自动推断“.o”文件的依赖文件了  
+
+- Makefile 使用变量名替换时等号左右不能加空格  
+
+- 暂时将输出文件都放在 `c-cpp` 目录下，避免编译命令写得太复杂  
