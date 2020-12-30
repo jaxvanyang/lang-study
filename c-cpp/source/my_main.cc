@@ -1,11 +1,10 @@
-#include "main.h"
-#include "my_helper.cpp"
-#include "my_helper.h"
-#include "my_sort.cpp"
-#include "my_sort.h"
-
 #include <iostream>
 #include <vector>
+
+#include "helper.cc"
+#include "helper.h"
+#include "sort.cc"
+#include "sort.h"
 
 using namespace std;
 

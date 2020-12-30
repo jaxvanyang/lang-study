@@ -54,3 +54,6 @@ A breif introduction of what we can make from this project.
 - C/C++ 文件名一般是 `my_source_file.cc` 类型,但让 `24_points` 成为例外无伤大雅  
 
 - 不再逐一修改编译输出文件的名字,考虑编写函数完成重命名  
+
+## 计划
+- [ ] 尝试删除 `my_main.cc` 里引入的源文件  

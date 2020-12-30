@@ -1,6 +1,4 @@
-#include "my_helper.h"
-
-#define SIZE_OF_ARR(ARR) (sizeof(ARR) / sizeof(ARR[0]))
+#include "helper.h"
 
 using namespace std;
 

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 
+#define SIZE_OF_ARR(ARR) (sizeof(ARR) / sizeof(ARR[0]))
+
 using namespace std;
 
 namespace my_helper {
