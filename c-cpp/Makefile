@@ -4,14 +4,14 @@
 # 添加文件搜索路径
 VPATH = source
 
-# 使用 := 可以防止 Makefile 递归使用变量名
-LINEAR_MAIN := source/linear_main.cc
+# Linear algebra varibles
+LINEAR_MAIN := source/linear_main.cc	# 使用 := 可以防止 Makefile 递归使用变量名
 LINEAR_CC := matrix.cc vector.cc
 LINEAR_O := $(LINEAR_CC:cc=o)
 
-
+# Linear algebra rules
 linear.out : linear_main.cc $(LINEAR_O)
-	g++ -g -I header -o linear.out $(LINEAR_MAIN) $(LINEAR_O:%=tmp/%)
+	g++ -g -I header $(LINEAR_MAIN) $(LINEAR_O:%=tmp/%)
 
 vector.o : vector.cc
 	g++ -c -g -I header -o tmp/vector.o source/vector.cc
@@ -19,13 +19,16 @@ vector.o : vector.cc
 matrix.o : matrix.cc
 	g++ -c -g -I header -o tmp/matrix.o source/vector.cc
 
-test :
-	echo "$(LINEAR_CC)"
-	echo "$(LINEAR_O)"
+# 24 points rules
+24_points.out : 24_points.c
+	cc -g source/24_points.c
 
-.PHONY : linear clean
+.PHONY : linear clean 24
 linear :
 	make linear.out
 
 clean :
 	-rm -f tmp/*.o *.out
+
+24 :
+	make 24_points.out
