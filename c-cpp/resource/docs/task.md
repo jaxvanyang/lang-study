@@ -4,7 +4,7 @@
 
 - [ ] 测试完成后删除 `my_main.cc`  
 
-- [ ] 配置 VS Code 的 C/C++ 配置文件  
+- [ ] 配置 VS Code 的 C/C++ 配置文件，可参考备份文件  
 
 - [ ] 编写测试专用 Makefile，并引入到主 Makefile  
 
