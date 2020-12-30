@@ -1,9 +1,10 @@
 #pragma once
 
 #include <stdio.h>
+
 #include "helper.h"
 
-typedef struct Data_{
+typedef struct Data_ {
     int size;
     double total;
     double average;
