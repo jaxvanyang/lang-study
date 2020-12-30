@@ -2,7 +2,7 @@
 # include ./linux-c/Makefile
 
 # 添加文件搜索路径
-VPATH = source
+VPATH = source tmp
 
 # Linear algebra varibles
 LINEAR_MAIN := source/linear_main.cc	# 使用 := 可以防止 Makefile 递归使用变量名
@@ -47,6 +47,11 @@ statistic.o : statistic.c
 
 stats.out : stats.c helper.o statistic.o
 	g++ -g -I header -o stats.out source/stats.c tmp/helper.o tmp/statistic.o
+
+# New test ##############################################
+# 将 test.out 设置成只依赖对象文件
+TEST_MAIN := source/test_main.cc
+
 
 # 纯粹的任务或编译别名
 .PHONY : linear clean 24
