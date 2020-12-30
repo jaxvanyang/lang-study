@@ -2,12 +2,34 @@
 <html lang="zh-CN">
 
 <head>
-    <title>凯撒密码</title>
-    <script type="module" src="./main.mjs"></script>
+    <title>Test</title>
+    <!-- <script type="module" src="./main.mjs"></script> -->
+    <!-- <script type="module" src="./test.js"></script> -->
+    <style>
+        html {
+            background-color: gray;
+        }
+    </style>
 </head>
 
 <body>
-    <p>Hello World!</p>
+    <p>Hello JavaScript!</p>
+    <script>
+        let reply = null
+        while (true) {
+            const num = Math.floor(Math.random() * 10)
+            reply = prompt('猜数字，从 0 到 9，看看你是不是非酋')
+            if (num == reply) {
+                alert('恭喜你，猜对了！')
+            } else {
+                alert(`真可惜，猜错了，正确的数字是：${num}`)
+            }
+            reply = prompt('再来一次吗？重玩请输入“Y”')
+            if (reply !== 'y' && reply !== 'Y') {
+                break
+            }
+        }
+    </script>
 </body>
 
 </html>
