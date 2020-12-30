@@ -1,4 +1,5 @@
 *.exe
+*.out
 *.tmp
 *.txt
 
