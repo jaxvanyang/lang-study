@@ -1,8 +1,9 @@
-*.exe
-*.out
-*.o
-*.tmp
-*.txt
+*\.exe
+*\.out
+*\.o
+*\.tmp
+*\.txt
+*\.log
 
 __pycache__/
 out/
