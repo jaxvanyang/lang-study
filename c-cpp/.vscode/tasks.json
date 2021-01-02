@@ -8,6 +8,8 @@
 			"args": [
 				"-g",
 				"${file}",
+				// 添加空格会报错
+				"-Iheader",
 				"-o",
 				"${fileDirname}/${fileBasenameNoExtension}.out"
 			],
