@@ -59,6 +59,7 @@ all.tmp : $(ALL_O)
 # 只用来删除 make 生成的文件
 clean :
 	-rm -f tmp/*.o *.out *.tmp *.o
+	-find * -name '*\.out' -delete
 
 
 ################ 规则别名 ################
