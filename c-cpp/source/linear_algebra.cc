@@ -6,7 +6,7 @@
 
 // 由于变长参数列表的解析需要指定变量类型
 // 所以在初始化时传入的分量大小必须是 double 类型
-Vector::Vector(const Orientation orientation = kVertical, const int size = 0,
+Vector::Vector(const Orientation orientation, const int size,
                ...) {
   size_ = size;
   orientation_ = orientation;
@@ -25,8 +25,14 @@ Vector::Vector(const Vector &v) {
   memcpy(values_, v.values_, size_ * sizeof(double));
 }
 
-// 因为调用了方法，所以参数不能用 const 修饰
-Vector Vector::operator=(Vector &v) { return v.Copy(); }
+// 赋值重载函数本质上也是由对象调用，所以要在原地修改
+Vector Vector::operator=(const Vector &v) {
+  orientation_ = v.orientation_;
+  size_ = v.size_;
+  values_ = new double[size_];
+  memcpy(values_, v.values_, size_ * sizeof(double));
+  return *this;
+}
 
 Vector Vector::Copy() {
   Vector copy(orientation_, 0);

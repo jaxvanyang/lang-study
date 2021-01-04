@@ -16,11 +16,12 @@ class Vector {
   // 向量构造函数
   // 需先指定大小，默认为 0;再指定方向，方向默认为垂直;
   // 最后是各分量的大小,必须是,double 类型
-  Vector(const Orientation orientation, const int size, ...);
+  Vector(const Orientation orientation = kVertical, const int size = 0, ...);
   Vector(const Vector &v);
 
-  // 重载赋值运算符，通过调用 Copy() 方法进行深拷贝
-  Vector operator=(Vector &v);
+  // 用于临时变量的赋值重载
+  // 返回调用对象的 Copy()
+  Vector operator=(const Vector &v);
 
   // 向量析构函数
   // 因为只需要释放分量的内存，工作比较少，可以用内联实现
