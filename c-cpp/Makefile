@@ -19,11 +19,11 @@ ALL_O += $(LINEAR_O)	# 添加所有的对象文件名，方便测试
 # 没有指定 linear_algebra.o 的生成规则，由 make 隐式规则生成
 # 通过在 VPATH 中搜索 linear_lagebra.cc，再规则别名里为 make 指定 FLAG 即可正常生成
 # 不能直接使用，因为隐式规则不会自动指定头文件搜索路径，需要使用添加了 FLAG 的规则别名
-linear.out : linear_main.cc $(LINEAR_O)
-	g++ -g -I header -o linear.out $(LINEAR_MAIN) $(LINEAR_O)
+linear_main.out : linear_main.cc $(LINEAR_O)
+	g++ -g -I header -o linear_main.out $(LINEAR_MAIN) $(LINEAR_O)
 # linear.out rule alias
 linear :
-	make linear.out $(FLAGS)
+	make linear_main.out $(FLAGS)
 
 
 # TODO: refactor code below
