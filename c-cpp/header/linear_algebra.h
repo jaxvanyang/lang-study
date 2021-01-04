@@ -10,6 +10,8 @@ enum Orientation { kVertical, kHorizontal };  // 用于指示向量的方向
 /* 向量类
  *
  * 向量的大小在初始化后就不应该改变，只能改变分量和方向
+ * 数据成员包括：orientation_ size_ values_
+ * 应特别注意对指针变量 values_ 的操作
  */
 class Vector {
  public:
@@ -17,6 +19,7 @@ class Vector {
   // 需先指定大小，默认为 0;再指定方向，方向默认为垂直;
   // 最后是各分量的大小,必须是,double 类型
   Vector(const Orientation orientation = kVertical, const int size = 0, ...);
+  // 构造函数初始化时，对象内部的数据还不确定，不能直接进行释放内存的操作
   Vector(const Vector &v);
 
   // 用于临时变量的赋值重载
@@ -76,6 +79,10 @@ class Vector {
   // 原地转置向量，并返回转置后的向量
   inline Vector &Transpose();
 
+ protected:
+  // 复刻另一个向量，在自身上修改
+  inline void fork(const Vector &v);
+
  private:
   int size_;
   double *values_;
@@ -88,7 +95,7 @@ class Vector {
 class Matrix {
  public:
   // 使用缺省参数来初始化，所以初始化时需要特别小心
-  Matrix(const int row_size, const int col_size, ...);
+  Matrix(const int row_size = 0, const int col_size = 0, ...);
   Matrix(const Matrix &m);
 
   // 通过调用 Copy() 进行深拷贝
@@ -139,8 +146,8 @@ class Matrix {
   inline double *get_row(const int i);
 
  private:
-  int row_size_, col_size_;
-  double *values_;
+  int row_size_ = 0, col_size_ = 0;
+  double *values_ = nullptr;
 };
 
 // TODO: 添加方阵继承矩阵，并编写行列式函数
@@ -167,6 +174,17 @@ inline double &Vector::operator[](const int i) {
 inline Vector &Vector::Transpose() {
   this->change_orientation();
   return *this;
+}
+
+// 在复刻的同时还回收了之前的存储空间
+// 使用内联方式，但是调用了一些函数，可能会对性能有影响
+// TODO: 影响待考
+void Vector::fork(const Vector &v) {
+  orientation_ = v.orientation_;
+  size_ = v.size_;
+  delete[] values_;
+  values_ = new double[size_];
+  memcpy(values_, v.values_, size_ * sizeof(double));
 }
 
 inline double *Matrix::get_row(const int i) {

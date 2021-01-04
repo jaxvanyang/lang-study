@@ -6,11 +6,11 @@
 
 // 由于变长参数列表的解析需要指定变量类型
 // 所以在初始化时传入的分量大小必须是 double 类型
-Vector::Vector(const Orientation orientation, const int size,
-               ...) {
-  size_ = size;
-  orientation_ = orientation;
-  values_ = new double[size];
+Vector::Vector(const Orientation orientation, const int size, ...)
+    : orientation_(orientation), size_(size), values_(nullptr) {
+  // 即使 new 的数组大小为 0,依然会引起指针更改，所以需要判断
+  // 三元运算符的等级较高，可以不加括号
+  values_ = size == 0 ? nullptr : new double[size];
 
   std::va_list args;
   va_start(args, size);
@@ -18,17 +18,20 @@ Vector::Vector(const Orientation orientation, const int size,
   va_end(args);
 }
 
-Vector::Vector(const Vector &v) {
-  size_ = v.size_;
-  orientation_ = v.orientation_;
-  values_ = new double[size_];
-  memcpy(values_, v.values_, size_ * sizeof(double));
+Vector::Vector(const Vector &v)
+    : orientation_(v.orientation_), size_(v.size_), values_(nullptr) {
+  fork(v);
+  // size_ = v.size_;
+  // orientation_ = v.orientation_;
+  // values_ = new double[size_];
+  // memcpy(values_, v.values_, size_ * sizeof(double));
 }
 
 // 赋值重载函数本质上也是由对象调用，所以要在原地修改
 Vector Vector::operator=(const Vector &v) {
   orientation_ = v.orientation_;
   size_ = v.size_;
+  delete[] values_;
   values_ = new double[size_];
   memcpy(values_, v.values_, size_ * sizeof(double));
   return *this;
@@ -176,14 +179,14 @@ Vector Vector::Cross(const Vector &v) { return this->VectorProductWith(v); }
 Vector Vector::operator*(const Vector &v) { return this->VectorProductWith(v); }
 
 /*  Matrix structor and destructor  ************************************/
-Matrix::Matrix(const int row_size = 0, const int col_size = 0, ...) {
-  row_size_ = row_size;
-  col_size_ = col_size;
-  values_ = new double[row_size * col_size];
-
+Matrix::Matrix(const int row_size, const int col_size, ...)
+    : row_size_(row_size), col_size_(col_size), values_(nullptr) {
+  const int size = row_size * col_size;
+  // 判断 size 是否为 0,避免产生野指针
+  values_ = size == 0 ? nullptr : new double[size];
   std::va_list args;
   // TODO: 修复不是最后参数的编译警告
-  va_start(args, row_size * col_size);
+  va_start(args, size);
   for (int i = 0; i < row_size; i++) {
     for (int j = 0; j < col_size; j++) {
       values_[i * col_size + j] = va_arg(args, double);
@@ -192,15 +195,22 @@ Matrix::Matrix(const int row_size = 0, const int col_size = 0, ...) {
   va_end(args);
 }
 
-Matrix::Matrix(const Matrix &m) {
-  row_size_ = m.row_size_;
-  col_size_ = m.col_size_;
+Matrix::Matrix(const Matrix &m)
+    : row_size_(m.row_size_), col_size_(m.col_size_), values_(nullptr) {
   const int size = row_size_ * col_size_;
-  values_ = new double[size];
-  for (int i = 0; i < size; i++) { values_[i] = m.values_[i]; }
+  values_ = size == 0 ? nullptr : new double[size];
+  memcpy(values_, m.values_, size * sizeof(double));
 }
 
-Matrix Matrix::operator=(const Matrix &m) { return this->Copy(); }
+Matrix Matrix::operator=(const Matrix &m) {
+  row_size_ = m.row_size_;
+  col_size_ = m.col_size_;
+  delete[] values_;  // 注意要删除之前的内存空间
+  const int size = row_size_ * col_size_;
+  values_ = new double[size];
+  memcpy(values_, m.values_, size * sizeof(double));
+  return *this;
+}
 
 Matrix::~Matrix() { delete[] values_; }
 

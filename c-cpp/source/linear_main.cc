@@ -3,31 +3,24 @@
 using namespace std;
 
 int main() {
-  Matrix m(3, 2, 1.1, 1.2, 2.1, 2.2, 3.1, 3.2);
-  // Matrix n = Matrix(m);
-  // // n.Print();
-  // cout << endl;
-  // n[1][1] = 9;
-  // m.Print();
-  // cout << endl;
-  // n.Print();
-  // m.Print();
-  // m.Transpose();
-  // m.Print();
-
-  // Matrix n = 2 * m;
-  // n.Print();
-
-  Vector u(kHorizontal, 2, 1.0, 2.0);
-  // Vector v = (Vector(u));
-  Vector v = 3 * u;
-  v.Print();
-  v.Transpose();
-  v.Print();
-  // v[1] = 90;
-
+  // Vector u;
   // u.Print();
+  // u = Vector(kHorizontal, 3, 1.0, 2.0, 3.0);
+  // u.Print();
+
+  // Vector v = Vector(u);
+  // v.Transpose();
   // v.Print();
 
+  Matrix m;
+  m.Print();
+  m = Matrix(2, 1, 1.1, 1.2);
+  m.Print();
+
+  Matrix n = Matrix(m);
+  n.Transpose();
+  n.Print();
+
+  
   return 0;
 }
