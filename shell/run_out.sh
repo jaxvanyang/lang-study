@@ -1,1 +1,2 @@
-cp $1 ~ && chmod a+x ~/$1 && ~/$1 && rm ~/$1
+cp $1 ~/tmp.out && chmod a+x ~/tmp.out && ~/tmp.out
+rm ~/tmp.out
