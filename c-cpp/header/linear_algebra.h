@@ -2,6 +2,7 @@
 
 #include <cstdarg>
 #include <cstring>
+#include <iostream>
 #include <vector>
 
 enum Orientation { kVertical, kHorizontal };  // 用于指示向量的方向

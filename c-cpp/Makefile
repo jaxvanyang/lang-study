@@ -1,17 +1,32 @@
-# 可以引入其他的 Makefile
-# include ./linux-c/Makefile
-
 # 添加文件搜索路径，不用搜索头文件，因为 gcc 会搜索
 VPATH = source tmp
 
+################ 纯粹的任务或编译别名 ################
+.PHONY : linear clean 24
 
-################ 变量 ################
+# 通过 CFLAGS 和 CXXFLAGS 简化规则书写，并省去对象的编译规则
+# 只能用于对象文件的编译
+# 副作用：不能指定对象文件的生成位置
+FLAGS := CXXFLAGS='-g -I header' CFLAGS='-g -I header'
+
+################ 线性代数 ################
 # Linear algebra varibles
 LINEAR_MAIN := source/linear_main.cc	# 使用 := 可以防止 Makefile 递归使用变量名
-LINEAR_CC := matrix.cc vector.cc
+LINEAR_CC := linear_algebra.cc
 LINEAR_O := $(LINEAR_CC:cc=o)
 ALL_O += $(LINEAR_O)	# 添加所有的对象文件名，方便测试
+# Linear algebra rules
+# 没有指定 linear_algebra.o 的生成规则，由 make 隐式规则生成
+# 通过在 VPATH 中搜索 linear_lagebra.cc，再规则别名里为 make 指定 FLAG 即可正常生成
+# 不能直接使用，因为隐式规则不会自动指定头文件搜索路径，需要使用添加了 FLAG 的规则别名
+linear.out : linear_main.cc $(LINEAR_O)
+	g++ -g -I header -o linear.out $(LINEAR_MAIN) $(LINEAR_O)
+# linear.out rule alias
+linear :
+	make linear.out $(FLAGS)
 
+
+# TODO: refactor code below
 # My varibles
 MY_MAIN := source/my_main.cc
 MY_CC := helper.cc sort.cc
@@ -25,9 +40,6 @@ ALL_O += $(STATS_O)
 
 
 ################ 规则 ################
-# Linear algebra rules
-linear.out : linear_main.cc $(LINEAR_O)
-	g++ -g -I header -o linear.out $(LINEAR_MAIN) $(LINEAR_O)
 
 # 24 points rules
 24.out : 24_points.c
@@ -52,23 +64,10 @@ test.out : test.cc $(ALL_O)
 all.tmp : $(ALL_O)
 	-find * -type f -name '*.o' -exec echo {} > all.tmp \;
 
-
-################ 纯粹的任务或编译别名 ################
-.PHONY : linear clean 24
-
 # 只用来删除 make 生成的文件
 clean :
 	-rm -f tmp/*.o *.out *.tmp *.o
 	-find * -name '*\.out' -delete
-
-
-################ 规则别名 ################
-# 通过 CFLAGS 和 CXXFLAGS 简化规则书写，并省去对象的编译规则
-# 只能用于对象文件的编译
-# 副作用：不能指定对象文件的生成位置
-FLAGS := CXXFLAGS='-g -I header' CFLAGS='-g -I header'
-linear :
-	make linear.out $(FLAGS)
 
 24 :
 	make 24.out

@@ -1,9 +1,8 @@
-#include <cstdarg>
-#include <iostream>
-#include <vector>
+// #include <cstdarg>
+// #include <iostream>
+// #include <vector>
 
-// #include "linear.h"
-#include "linear_math.h"
+#include "linear_algebra.h"
 
 // 由于变长参数列表的解析需要指定变量类型
 // 所以在初始化时传入的分量大小必须是 double 类型
@@ -361,36 +360,4 @@ Matrix operator*(const int k, const Matrix &m) {
   Matrix result = m;
   result *= k;
   return result;
-}
-
-using namespace std;
-
-int main() {
-  Matrix m(3, 2, 1.1, 1.2, 2.1, 2.2, 3.1, 3.2);
-  // Matrix n = Matrix(m);
-  // // n.Print();
-  // cout << endl;
-  // n[1][1] = 9;
-  // m.Print();
-  // cout << endl;
-  // n.Print();
-  // m.Print();
-  // m.Transpose();
-  // m.Print();
-
-  // Matrix n = 2 * m;
-  // n.Print();
-
-  Vector u(kHorizontal, 2, 1.0, 2.0);
-  // Vector v = (Vector(u));
-  Vector v = 3 * u;
-  v.Print();
-  v.Transpose();
-  v.Print();
-  // v[1] = 90;
-
-  // u.Print();
-  // v.Print();
-
-  return 0;
 }
