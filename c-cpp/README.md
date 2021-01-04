@@ -26,6 +26,8 @@
 
 11. 避免使用循环变量 `i, j, k` 作为函数参数名  
 
+12. 所有指针必须初始化为 `nullptr`，防止出现“野指针”，在重新赋值前记得回收之前的空间  
+
 
 ## File structure
 - [dependencies](dependencies)  
