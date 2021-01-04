@@ -1,3 +1,3 @@
-cp ~/.zshrc ~/repos/backup
-cp ~/.vimrc ~/repos/backup
-cp ~/.gitconfig ~/repos/backup
+cp -r ~/.zshrc ~/repos/backup/.zshrc
+cp ~/.vimrc ~/repos/backup/.vimrc
+cp ~/.gitconfig ~/repos/backup/.gitconfig
