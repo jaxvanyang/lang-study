@@ -8,7 +8,9 @@
             "name": "g++ - 生成和调试活动文件",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}/${fileBasenameNoExtension}.out",
+            // "program": "${fileDirname}/${fileBasenameNoExtension}.out",
+            // 输出文件的位置和 Makefile 同级，所以需要修改程序目录，必须加上上级目录
+            "program": "${workspaceFolder}/${fileBasenameNoExtension}.out",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
