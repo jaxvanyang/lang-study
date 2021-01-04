@@ -51,7 +51,7 @@ class Vector {
   Vector Copy();
   void Print();
 
-
+  // TODO: 向量运算待测试
   /* 向量加减 */
   // 加上一个向量，在自身上修改
   Vector &operator+=(const Vector &v);
@@ -124,6 +124,7 @@ class Matrix {
   Matrix Copy();
   void Print();
 
+  // TODO: 矩阵运算待测试
   /*  重载函数  *******************************/
   Matrix &operator+=(const Matrix &m);
   Matrix operator+(const Matrix &m);
@@ -146,6 +147,7 @@ class Matrix {
   inline double *get_row(const int i);
 
  private:
+  // 为数据成源声明的地方赋值并没有什么意义，因为变量分配的内存空间并不会因此而修改
   int row_size_ = 0, col_size_ = 0;
   double *values_ = nullptr;
 };

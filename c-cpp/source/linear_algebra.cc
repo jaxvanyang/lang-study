@@ -21,10 +21,6 @@ Vector::Vector(const Orientation orientation, const int size, ...)
 Vector::Vector(const Vector &v)
     : orientation_(v.orientation_), size_(v.size_), values_(nullptr) {
   fork(v);
-  // size_ = v.size_;
-  // orientation_ = v.orientation_;
-  // values_ = new double[size_];
-  // memcpy(values_, v.values_, size_ * sizeof(double));
 }
 
 // 赋值重载函数本质上也是由对象调用，所以要在原地修改
