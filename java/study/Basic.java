@@ -83,7 +83,10 @@ public class Basic {
         for (int i = 0; i < len; i++) {
             println(names[i]);
         }
-        
+
+        // 格式化输出
+        System.out.printf("integer = %d, hex = %08x, float=%.2f, science = %e, str=%s\n", int_max, short_max, float_max, double_max, names[0]);
+        // System.out.printf("%.2f", double_max);
     }
     public static void print(char ch) {
         System.out.print(ch);
