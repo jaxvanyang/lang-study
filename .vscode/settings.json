@@ -2,5 +2,5 @@
     "python.autoComplete.extraPaths": [
         "./python/file"
     ],
-    "jupyter.jupyterServerType": "remote"
+    "jupyter.jupyterServerType": "local"
 }
