@@ -68,6 +68,22 @@ public class Basic {
         sb.append("😃");
         sb.append("😜😍");
         println(sb);
+
+        // 数组类型
+        String[] names = new String[3]; // 初始化为 null
+        // String[] names = new String[] {"Steve", "Alex", "Jax"};
+        // String[] names = {"Steve", "Alex", "Jax"};
+        int len = names.length;
+        for (int i = 0; i < len; i++) {
+            println(names[i]);
+        }
+        names[0] = "Steve";
+        names[1] = "Alex";
+        names[2] = "Jax";
+        for (int i = 0; i < len; i++) {
+            println(names[i]);
+        }
+        
     }
     public static void print(char ch) {
         System.out.print(ch);
