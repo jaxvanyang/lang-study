@@ -30,6 +30,8 @@
 
 13. 为类的数据成员使用初始值列表，可以避免指针类型的数据成员被初始化成“野指针”  
 
+14. 使用 `wcin` 和 `wcout`，弃用 `cin` 和 `cout`  
+
 
 ## File structure
 - [dependencies](dependencies)  
