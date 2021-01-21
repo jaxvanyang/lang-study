@@ -5,11 +5,11 @@
 #include "helper.h"
 
 typedef struct Data_ {
-    int size;
-    double total;
-    double average;
-    double maxValue;
-    double minValue;
+  int size;
+  double total;
+  double average;
+  double maxValue;
+  double minValue;
 } Data;
 
 double getIntArrAverage(int arr[], int size);

@@ -14,7 +14,9 @@ Vector::Vector(const Orientation orientation, const int size, ...)
 
   std::va_list args;
   va_start(args, size);
-  for (int i = 0; i < size; i++) { values_[i] = va_arg(args, double); }
+  for (int i = 0; i < size; i++) {
+    values_[i] = va_arg(args, double);
+  }
   va_end(args);
 }
 
@@ -46,26 +48,33 @@ Vector Vector::operator=(const Vector &v) {
 Vector Vector::Copy() {
   Vector copy(orientation_, 0);
   copy.values_ = new double[size_];
-  for (int i = 0; i < size_; i++) { copy.values_[i] = values_[i]; }
+  for (int i = 0; i < size_; i++) {
+    copy.values_[i] = values_[i];
+  }
   return copy;
 }
 
 void Vector::Print() {
   if (orientation_ == kVertical) {
-    for (int i = 0; i < size_; i++) { std::cout << values_[i] << std::endl; }
+    for (int i = 0; i < size_; i++) {
+      std::cout << values_[i] << std::endl;
+    }
   } else {
     std::cout << values_[0];
-    for (int i = 1; i < size_; i++) { std::cout << ' ' << values_[i]; }
+    for (int i = 1; i < size_; i++) {
+      std::cout << ' ' << values_[i];
+    }
     std::cout << std::endl;
   }
 }
 
 std::vector<double> Vector::get_vector_copy() {
   std::vector<double> copy(size_, 0.0);
-  for (int i = 0; i < size_; i++) { copy[i] = values_[i]; }
+  for (int i = 0; i < size_; i++) {
+    copy[i] = values_[i];
+  }
   return copy;
 }
-
 
 Vector &Vector::operator+=(const Vector &v) {
   if (size_ != v.size_) {
@@ -73,7 +82,9 @@ Vector &Vector::operator+=(const Vector &v) {
                  "Vector &v)\n";
     exit(1);
   }
-  for (int i = 0; i < size_; i++) { values_[i] += v.values_[i]; }
+  for (int i = 0; i < size_; i++) {
+    values_[i] += v.values_[i];
+  }
   return *this;
 }
 
@@ -95,7 +106,9 @@ Vector &Vector::operator-=(const Vector &v) {
                  "Vector &v)\n";
     exit(1);
   }
-  for (int i = 0; i < size_; i++) { values_[i] -= v.values_[i]; }
+  for (int i = 0; i < size_; i++) {
+    values_[i] -= v.values_[i];
+  }
   return *this;
 }
 
@@ -112,7 +125,9 @@ Vector Vector::operator-(const Vector &v) {
 }
 
 Vector &Vector::operator*=(const double k) {
-  for (int i = 0; i < size_; i++) { values_[i] *= k; }
+  for (int i = 0; i < size_; i++) {
+    values_[i] *= k;
+  }
   return *this;
 }
 
@@ -127,7 +142,9 @@ Vector &Vector::operator/=(const double k) {
     std::cerr << "错误：除以 0\n位置：Vector::operator/=(const double k)\n";
     exit(1);
   }
-  for (int i = 0; i < size_; i++) { values_[i] /= k; }
+  for (int i = 0; i < size_; i++) {
+    values_[i] /= k;
+  }
   return *this;
 }
 
@@ -153,7 +170,9 @@ double Vector::ScalarProductWith(const Vector &v) {
     exit(1);
   }
   double result = 0.0;
-  for (int i = 0; i < size_; i++) { result += values_[i] * v.values_[i]; }
+  for (int i = 0; i < size_; i++) {
+    result += values_[i] * v.values_[i];
+  }
   return result;
 }
 double Vector::Dot(const Vector &v) { return this->ScalarProductWith(v); }
@@ -165,7 +184,9 @@ Vector Vector::VectorProductWith(const Vector &v) {
     exit(1);
   }
   // TODO: add other dimension defination
-  if (size_ != 3) { exit(1); }
+  if (size_ != 3) {
+    exit(1);
+  }
   if (orientation_ != v.orientation_) {
     std::cerr << "错误：向量方向不同\n位置：Vector::ScalarProductWith(const "
                  "Vector &v)\n";
@@ -225,7 +246,9 @@ std::vector<double> Matrix::get_row_vector_copy(const int i) {
   if (0 <= i && i < row_size_) {
     double *row = get_row(i);
     std::vector<double> ret(col_size_, 0.0);
-    for (int j = 0; j < col_size_; j++) { ret[j] = row[j]; }
+    for (int j = 0; j < col_size_; j++) {
+      ret[j] = row[j];
+    }
     return ret;
   }
   std::cerr << "错误：索引不在数据范围内\n位置：Matrix::get_row(const int i)\n";
@@ -235,7 +258,9 @@ std::vector<double> Matrix::get_row_vector_copy(const int i) {
 std::vector<double> Matrix::get_col_vector_copy(const int i) {
   if (0 <= i && i < col_size_) {
     std::vector<double> ret(row_size_, 0.0);
-    for (int j = 0; j < row_size_; j++) { ret[j] = values_[j * col_size_ + i]; }
+    for (int j = 0; j < row_size_; j++) {
+      ret[j] = values_[j * col_size_ + i];
+    }
     return ret;
   }
   std::cerr << "错误：索引不在数据范围内\n位置：Matrix::get_col(const int i)\n";
@@ -276,7 +301,9 @@ Matrix &Matrix::operator+=(const Matrix &m) {
               << m.col_size_ << std::endl;
   }
   const int size = row_size_ * col_size_;  // 使用常量告诉编译器不用再计算
-  for (int i = 0; i < size; i++) { values_[i] += m.values_[i]; }
+  for (int i = 0; i < size; i++) {
+    values_[i] += m.values_[i];
+  }
   return *this;
 }
 
@@ -304,7 +331,9 @@ Matrix &Matrix::operator-=(const Matrix &m) {
               << m.col_size_ << std::endl;
   }
   const int size = row_size_ * col_size_;  // 使用常量告诉编译器不用再计算
-  for (int i = 0; i < size; i++) { values_[i] -= m.values_[i]; }
+  for (int i = 0; i < size; i++) {
+    values_[i] -= m.values_[i];
+  }
   return *this;
 }
 
@@ -324,7 +353,9 @@ Matrix Matrix::operator-(const Matrix &m) {
 
 Matrix &Matrix::operator*=(const int k) {
   const int size = row_size_ * col_size_;
-  for (int i = 0; i < size; i++) { values_[i] *= k; }
+  for (int i = 0; i < size; i++) {
+    values_[i] *= k;
+  }
   return *this;
 }
 
@@ -341,7 +372,9 @@ Matrix &Matrix::operator/=(const int k) {
     exit(1);
   }
   const int size = row_size_ * col_size_;
-  for (int i = 0; i < size; i++) { values_[i] /= k; }
+  for (int i = 0; i < size; i++) {
+    values_[i] /= k;
+  }
   return *this;
 }
 
@@ -386,7 +419,11 @@ Matrix operator*(const int k, const Matrix &m) {
 
 // 头文件与源文件分离的函数模板
 // 每种需要使用的类型，均需要显式实例化
-template Vector::Vector(const int *arr, const int size, const Orientation orientation);
-template Vector::Vector(const long long *arr, const int size, const Orientation orientation);
-template Vector::Vector(const double *arr, const int size, const Orientation orientation);
-template Vector::Vector(const float *arr, const int size, const Orientation orientation);
+template Vector::Vector(const int *arr, const int size,
+                        const Orientation orientation);
+template Vector::Vector(const long long *arr, const int size,
+                        const Orientation orientation);
+template Vector::Vector(const double *arr, const int size,
+                        const Orientation orientation);
+template Vector::Vector(const float *arr, const int size,
+                        const Orientation orientation);

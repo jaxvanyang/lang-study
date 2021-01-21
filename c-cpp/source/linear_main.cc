@@ -65,7 +65,9 @@ void ModifyVector(Vector &v) {
   wcin >> size;                      // 使用 cin 会导致不同步
   arr = new double[size];
   wcout << L"请输入第一个向量各分量的大小：\n";
-  for (int i = 0; i < size; i++) { wcin >> arr[i]; }
+  for (int i = 0; i < size; i++) {
+    wcin >> arr[i];
+  }
   v = Vector(arr, size);
   delete[] arr;
 }
@@ -77,9 +79,13 @@ void AddTwoVector() {
   wcin >> size;                      // 使用 cin 会导致不同步
   arr_1 = new double[size], arr_2 = new double[size];
   wcout << L"请输入第一个向量各分量的大小：\n";
-  for (int i = 0; i < size; i++) { wcin >> arr_1[i]; }
+  for (int i = 0; i < size; i++) {
+    wcin >> arr_1[i];
+  }
   wcout << L"请输入第二个向量各分量的大小：\n";
-  for (int i = 0; i < size; i++) { wcin >> arr_2[i]; }
+  for (int i = 0; i < size; i++) {
+    wcin >> arr_2[i];
+  }
   Vector v_1 = Vector(arr_1, size);
   Vector v_2 = Vector(arr_2, size);
   delete[] arr_1;

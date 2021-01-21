@@ -5,7 +5,7 @@
 #include "statistic.h"
 
 int main(int argc, char *argv[]) {
-    parseParameter(argc, argv);
+  parseParameter(argc, argv);
 
-    int size = writeData();
+  int size = writeData();
 }

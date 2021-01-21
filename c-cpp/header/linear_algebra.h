@@ -170,7 +170,9 @@ inline Orientation Vector::change_orientation() {
 }
 
 inline double &Vector::operator[](const int i) {
-  if (0 <= i && i < size_) { return values_[i]; }
+  if (0 <= i && i < size_) {
+    return values_[i];
+  }
   std::cerr
       << "错误：索引不在数据范围内\n位置：Vector::operator[](const int i)\n";
   exit(1);
@@ -193,7 +195,9 @@ void Vector::fork(const Vector &v) {
 }
 
 inline double *Matrix::get_row(const int i) {
-  if (0 <= i && i < row_size_) { return values_ + i * col_size_; }
+  if (0 <= i && i < row_size_) {
+    return values_ + i * col_size_;
+  }
   std::cerr << "错误：索引不在数据范围内\n位置：Matrix::get_row(const int i)\n";
   exit(1);
 }
@@ -216,7 +220,6 @@ inline Vector &Matrix::operator[](const int row) {
   ret.values_ = get_row(row);
   return ret;
 }
-
 
 /*  Linear operation reload functions
  *  让运算不仅可以由类发起

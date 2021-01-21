@@ -3,6 +3,4 @@
 
 using namespace std;
 
-int main() {
-  wcout << L"你好，World\n";
-}
+int main() { wcout << L"你好，World\n"; }
