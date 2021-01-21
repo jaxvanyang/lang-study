@@ -22,8 +22,11 @@ class Vector {
   // 构造函数初始化时，对象内部的数据还不确定，不能直接进行释放内存的操作
   Vector(const Vector &v);
 
-  // 用于临时变量的赋值重载
-  // 返回调用对象的 Copy()
+  // 从确定长度的数组构造向量
+  template <typename T>
+  Vector(const T *arr, const int size = 0,
+         const Orientation orientation = kVertical);
+
   Vector operator=(const Vector &v);
 
   // 向量析构函数

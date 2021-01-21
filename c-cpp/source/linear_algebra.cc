@@ -23,6 +23,16 @@ Vector::Vector(const Vector &v)
   fork(v);
 }
 
+template <typename T>
+Vector::Vector(const T *arr, const int size, const Orientation orientation) {
+  orientation_ = orientation;
+  size_ = size;
+  values_ = new double[size];
+  for (int i = 0; i < size; i++) {
+    values_[i] = arr[i];
+  }
+}
+
 // 赋值重载函数本质上也是由对象调用，所以要在原地修改
 Vector Vector::operator=(const Vector &v) {
   orientation_ = v.orientation_;
@@ -373,3 +383,10 @@ Matrix operator*(const int k, const Matrix &m) {
   result *= k;
   return result;
 }
+
+// 头文件与源文件分离的函数模板
+// 每种需要使用的类型，均需要显式实例化
+template Vector::Vector(const int *arr, const int size, const Orientation orientation);
+template Vector::Vector(const long long *arr, const int size, const Orientation orientation);
+template Vector::Vector(const double *arr, const int size, const Orientation orientation);
+template Vector::Vector(const float *arr, const int size, const Orientation orientation);
