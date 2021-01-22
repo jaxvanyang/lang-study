@@ -16,6 +16,15 @@ int main() {
   // 必须使用这两条语句才能混用 wcout 和 cout
   ios::sync_with_stdio(false);
   wcout.imbue(locale(""));
+  // TODO: 暂且使用 wcout 输出，后续统一输出方法
+
+  Matrix testM = Matrix(3, 2, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+  Vector testV = Vector(kHorizontal, 3, 0.0, 2.0, 0.0);
+  cout << endl;
+  if (testM.LinearTransform(testV)) {
+    testV.Print();
+  }
+  return 0;
 
   wcerr << L"Oh no~" << endl;
 

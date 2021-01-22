@@ -384,6 +384,34 @@ Matrix Matrix::operator/(const int k) {
   return ret;
 }
 
+// 矩阵运算
+bool Matrix::LinearTransform(Vector &v) {
+  if (v.orientation_ == kVertical && v.size_ == col_size_) {  // 纵向时，向量大小应与矩阵列数相等
+    double *new_values = new double[row_size_];               // 转换后的向量大小和矩阵行数相等
+    for (int i = 0; i < row_size_; i++) {
+      for (int j = 0; j < v.size_; j++) {
+        new_values[i] += v[j] * values_[i * col_size_ + j];   // v[j] 和列向量[j]相乘
+      }
+    }
+    delete[] v.values_;
+    v.values_ = new_values;
+    v.size_ = row_size_;
+    return true;
+  } else if (v.orientation_ == kHorizontal && v.size_ == row_size_) {
+    double *new_values = new double[col_size_];
+    for (int i = 0; i < col_size_; i++) {
+      for (int j = 0; j < v.size_; j++) {
+        new_values[i] += v[j] * values_[j * col_size_ + i];   // v[j] 和行向量[j]相乘
+      }
+    }
+    delete[] v.values_;
+    v.values_ = new_values;
+    v.size_ = col_size_;
+    return true;
+  }
+  return false;
+}
+
 /*  矩阵操作  **************************************/
 Matrix &Matrix::Transpose() {
   const int size = row_size_ * col_size_;
