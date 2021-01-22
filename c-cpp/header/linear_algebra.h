@@ -73,11 +73,11 @@ class Vector {
 
   // 数量积（点积）
   double ScalarProductWith(const Vector &v);
-  double Dot(const Vector &v);                // 依靠调用 ScalarProductWith() 实现
+  double Dot(const Vector &v);  // 依靠调用 ScalarProductWith() 实现
   // 向量积（叉积）暂时只支持三维向量
   Vector VectorProductWith(const Vector &v);
-  Vector Cross(const Vector &v);              // 依靠调用 VectorProductWith() 实现
-  Vector operator*(const Vector &v);          // 同上
+  Vector Cross(const Vector &v);      // 依靠调用 VectorProductWith() 实现
+  Vector operator*(const Vector &v);  // 同上
 
   // 原地转置向量，并返回转置后的向量
   inline Vector &Transpose();
@@ -112,6 +112,7 @@ class Matrix {
   friend Matrix operator*(const int k, const Matrix &m);
   friend Vector operator*(Vector v, Matrix m);
   friend Vector operator*(Matrix m, Vector v);
+  friend bool ModifyMatrix(Matrix &m);  // 在 linear_main.cc 中声明和定义
 
   /*  getter and setter **********************/
   // 获得用容器 vector 承载的行向量的副本
@@ -144,9 +145,8 @@ class Matrix {
 
   /*  矩阵运算  *******************************/
   // 在向量参数上进行矩阵所表示的线性变换，成功返回 true
-  // 因为 class Matrix 在 class Vector 后声明，所以在 Vector 的方法不能使用 Matrix
-  // 所以把线性变换放在 Matrix 中
-  // 由于要修改参数 v，所以不用 const 修饰
+  // 因为 class Matrix 在 class Vector 后声明，所以在 Vector 的方法不能使用
+  // Matrix 所以把线性变换放在 Matrix 中 由于要修改参数 v，所以不用 const 修饰
   bool LinearTransform(Vector &v);
 
   /*  矩阵操作  *******************************/
