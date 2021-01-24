@@ -2,5 +2,8 @@
     "python.autoComplete.extraPaths": [
         "./python/file"
     ],
-    "jupyter.jupyterServerType": "local"
+    "jupyter.jupyterServerType": "local",
+    "files.associations": {
+        "ostream": "cpp"
+    }
 }
