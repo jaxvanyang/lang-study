@@ -70,6 +70,7 @@ all.tmp : $(ALL_O)
 clean :
 	-rm -f tmp/*.o *.out *.tmp *.o
 	-find * -name '*\.out' -delete
+	-find * -name '*\.exe' -delete
 
 24 :
 	make 24.out
