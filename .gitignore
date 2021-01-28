@@ -5,5 +5,8 @@
 *\.txt
 *\.log
 
+# 最常用的临时代码
+a.*
+
 __pycache__/
 out/
