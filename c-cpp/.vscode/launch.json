@@ -10,10 +10,10 @@
             "request": "launch",
             // "program": "${fileDirname}/${fileBasenameNoExtension}.out",
             // 输出文件的位置和 Makefile 同级，所以需要修改程序目录，必须加上上级目录
-            "program": "${workspaceFolder}/${fileBasenameNoExtension}.out",
+            "program": "${fileDirname}/${fileBasenameNoExtension}.out",
             "args": [],
-            "stopAtEntry": true,
-            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
