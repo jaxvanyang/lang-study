@@ -3,7 +3,8 @@ import java.util.Scanner;
 public class Input {
     public static void main(String[] args) {
         final var scanner = new Scanner(System.in);
-        while (true) {
+        // 用流来重写
+        while (scanner.hasNext()) {
             menu();
             final var input_int = scanner.nextInt();
             switch (input_int) {
@@ -16,7 +17,8 @@ public class Input {
                 default:
                     return;
             }
-        }        
+        }
+        scanner.close();
     }
 
     final static Scanner scanner = new Scanner(System.in);
