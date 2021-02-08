@@ -1,3 +1,5 @@
+package algs4;
+
 import java.io.*;
 public class Io {
   public static void main(String[] args) throws IOException {
