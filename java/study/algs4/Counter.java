@@ -17,7 +17,8 @@ public class Counter {
     return value;
   }
 
-  // String toSting() {
-  // return id + ": " + value;
-  // }
+  // TODO: Main.java 中无法调用
+  public String toSting() {
+  return id + ": " + value;
+  }
 }
