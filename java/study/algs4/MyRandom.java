@@ -31,6 +31,14 @@ public class MyRandom {
         return ret;
     }
 
+    public static Double[] randomDoubleArray(int size) {
+        Double[] ret = new Double[size];
+        for (int i = 0; i < size; ++i) {
+            ret[i] = Math.random();
+        }
+        return ret;
+    }
+
     public static void main(String[] args) {
         int size = 10, min = 1, max = 10;
         if (args.length == 3) {
