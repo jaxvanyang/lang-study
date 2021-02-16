@@ -12,7 +12,7 @@ public class MyRandom {
         return ret;
     }
 
-    public static Integer[] randomIntArray(int size, int min, int max) {
+    public static Integer[] randomIntegerArray(int size, int min, int max) {
         Integer[] ret = new Integer[size];
         for (int i = 0; i < size; ++i) {
             double f = Math.random() / NEXT_DOWN;
@@ -38,7 +38,7 @@ public class MyRandom {
             min = Integer.parseInt(args[1]);
             max = Integer.parseInt(args[2]);
         }
-        var arr = randomIntArray(size, min, max);
+        var arr = randomIntegerArray(size, min, max);
         for (int i = 0; i < size; ++i) {
             System.out.print(arr[i] + " ");
         }
