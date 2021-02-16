@@ -3,25 +3,33 @@ package algs4;
 public class MySort {
     public static void main(String[] args) {
         int n = 100, min = 1, max = 100;
+        String alg = "Insertion";
         if (args.length >= 1) {
             n = Integer.parseInt(args[0]);
         }
         if (args.length >= 2) {
             min = Integer.parseInt(args[1]);
         }
-        if (args.length == 3) {
+        if (args.length >= 3) {
             max = Integer.parseInt(args[2]);
         }
+        if (args.length == 4) {
+            alg = args[3];
+        }
 
-        Integer[] arr = MyRandom.randomIntegerArray(n, min, max);
+        Double[] arr = MyRandom.randomDoubleArray(n);
         StopWatch watch = new StopWatch();
 
-        insertionSort(arr);
-        // selectionSort(arr);
+        if (alg.equals("Insertion")) {
+            insertionSort(arr);
+        } else {
+            selectionSort(arr);
+        }
+
         double time = watch.elapsedTime();
 
         assert isSorted(arr);
-        
+
         show(arr);
 
         System.out.println("排序用时：" + time + " 秒");
