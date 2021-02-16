@@ -13,7 +13,17 @@ public class StopWatch {
     }
 
     public static void main(String[] args) {
-        var watch = new StopWatch();
-        System.out.println(watch.elapsedTime());
+        int n = 100_0000;
+        if (args.length == 1) {
+            n = Integer.parseInt(args[0]);
+        }
+        int[] arr = new int[n];
+        StopWatch w = new StopWatch();
+        for (int i = 0; i < n; ++i) {
+            arr[i] = i;
+        }
+        double time = w.elapsedTime();
+        System.out.println("判断、自增、赋值各 " + n + "次，共 " + 3 * n + "次");
+        System.out.println("一共耗时：" + time + " 秒，平均每次操作耗时： " + time / 3 / n + " 秒");
     }
 }

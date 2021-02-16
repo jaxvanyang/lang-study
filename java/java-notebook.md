@@ -1,7 +1,7 @@
 # Java 学习笔记
 
 ## Java 命令行备忘
-1. 断言：  
+1. 启用断言：`-enableassertions`，简写 `-ea`  
 
 ## 数据类型
 
