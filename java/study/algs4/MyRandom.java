@@ -39,6 +39,15 @@ public class MyRandom {
         return ret;
     }
 
+    public static Double[] randomDoubleArray(int size, double min, double max) {
+        Double[] ret = new Double[size];
+        for (int i = 0; i < size; ++i) {
+            double f = Math.random() / Math.nextDown(1.0);
+            ret[i] = min * (1.0 - f) + max * f;
+        }
+        return ret;
+    }
+
     public static void main(String[] args) {
         int size = 10, min = 1, max = 10;
         if (args.length == 3) {
