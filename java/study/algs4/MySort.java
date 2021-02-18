@@ -5,17 +5,30 @@ public class MySort {
         int n = 100000;
         double min = 0.0, max = 1.0;
         String alg = "Insertion";
+        boolean show = false;
         if (args.length >= 1) {
-            alg = args[0];
+            if (args[0].equals("show"))
+                show = true;
+            else
+                alg = args[0];
         }
         if (args.length >= 2) {
-            n = Integer.parseInt(args[1]);
+            if (args[1].equals("show"))
+                show = true;
+            else
+                n = Integer.parseInt(args[1]);
         }
         if (args.length >= 3) {
-            min = Double.parseDouble(args[2]);
+            if (args[2].equals("show"))
+                show = true;
+            else
+                min = Double.parseDouble(args[2]);
         }
         if (args.length == 4) {
-            max = Double.parseDouble(args[3]);
+            if (args[3].equals("show"))
+                show = true;
+            else
+                max = Double.parseDouble(args[3]);
         }
 
         Double[] arr = MyRandom.randomDoubleArray(n, min, max);
@@ -27,6 +40,10 @@ public class MySort {
             shellSort(arr);
         } else if (alg.equals("ShellPro")) {
             shellSortPro(arr);
+        } else if (alg.equals("Merge")) {
+            mergeSort(arr);
+        } else if (alg.equals("MergeBU")) {
+            mergeSortBU(arr);
         } else {
             selectionSort(arr);
         }
@@ -35,9 +52,56 @@ public class MySort {
 
         assert isSorted(arr);
 
-        show(arr);
+        if (show)
+            show(arr);
 
+        System.out.println("For " + n + " Doubles ranging from " + min + " to " + max);
         System.out.println(alg + " 排序用时：" + time + " 秒");
+    }
+
+    private static Comparable[] helpArr;
+
+    private static void merge(Comparable[] arr, int left, int mid, int right) {
+        for (int i = left; i <= right; ++i) {
+            helpArr[i] = arr[i];
+        }
+        int l = left, r = mid + 1, i = left;
+        while (l <= mid && r <= right) {
+            arr[i++] = less(helpArr[l], helpArr[r]) ? helpArr[l++] : helpArr[r++];
+        }
+        while (l <= mid) {
+            arr[i++] = helpArr[l++];
+        }
+        while (r <= right) {
+            arr[i++] = helpArr[r++];
+        }
+    }
+
+    private static void mergeSort(Comparable[] arr, int left, int mid, int right) {
+        if (left < mid) {
+            mergeSort(arr, left, (left + mid) >> 1, mid);
+        }
+        if (mid + 1 < right) {
+            mergeSort(arr, mid + 1, (mid + 1 + right) >> 1, right);
+        }
+        if (mid + 1 <= right && less(arr[mid + 1], arr[mid]))
+            merge(arr, left, mid, right);
+    }
+
+    public static void mergeSort(Comparable[] arr) {
+        helpArr = new Comparable[arr.length];
+        mergeSort(arr, 0, arr.length >> 1, arr.length - 1);
+    }
+
+    // 自底向上的归并排序，不用递归
+    public static void mergeSortBU(Comparable[] arr) {
+        int len = arr.length;
+        helpArr = new Comparable[len];
+        for (int sz = 1; sz < len; sz += sz) {
+            for (int l = 0; l < len - sz; l += sz + sz) {
+                merge(arr, l, l + sz - 1, Math.min(l + sz + sz - 1, len - 1));
+            }
+        }
     }
 
     // 希尔排序

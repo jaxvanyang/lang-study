@@ -11,6 +11,10 @@ public class SortCompare {
             MySort.shellSort(arr);
         } else if (alg.equals("ShellPro")) {
             MySort.shellSortPro(arr);
+        } else if (alg.equals("Merge")) {
+            MySort.mergeSort(arr);
+        } else if (alg.equals("MergeBU")) {
+            MySort.mergeSortBU(arr);
         }
         assert MySort.isSorted(arr) : "arr is not sorted";
         return timer.elapsedTime();
@@ -51,7 +55,7 @@ public class SortCompare {
 
         double t1 = timeRandomInput(alg1, n, t);
         double t2 = timeRandomInput(alg2, n, t);
-        System.out.printf("For %d random Doubles\n%s is ", n, alg1);
+        System.out.printf("For %d random Doubles and running for %d times\n%s is ", n, t, alg1);
         System.out.printf("%f times faster as %s\n", t2 / t1, alg2);
         System.out.printf("%s uses %f s, %s uses %f s\n", alg1, t1, alg2, t2);
     }
