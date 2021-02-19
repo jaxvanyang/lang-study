@@ -1,62 +1,78 @@
 package algs4;
 
 public class MySort {
-    public static void main(String[] args) {
-        int n = 100000;
+    public static final String helpMsg = """
+            使用方式：java algs4.MySort [alg=xx] [n=xx] [min=xx] [max=xx] [-s|-show]""";
+
+    private static class Parameter {
+        int n = 10000;
         double min = 0.0, max = 1.0;
         String alg = "Insertion";
         boolean show = false;
-        if (args.length >= 1) {
-            if (args[0].equals("show"))
-                show = true;
-            else
-                alg = args[0];
-        }
-        if (args.length >= 2) {
-            if (args[1].equals("show"))
-                show = true;
-            else
-                n = Integer.parseInt(args[1]);
-        }
-        if (args.length >= 3) {
-            if (args[2].equals("show"))
-                show = true;
-            else
-                min = Double.parseDouble(args[2]);
-        }
-        if (args.length == 4) {
-            if (args[3].equals("show"))
-                show = true;
-            else
-                max = Double.parseDouble(args[3]);
-        }
 
-        Double[] arr = MyRandom.randomDoubleArray(n, min, max);
-        StopWatch watch = new StopWatch();
-
-        if (alg.equals("Insertion")) {
-            insertionSort(arr);
-        } else if (alg.equals("Shell")) {
-            shellSort(arr);
-        } else if (alg.equals("ShellPro")) {
-            shellSortPro(arr);
-        } else if (alg.equals("Merge")) {
-            mergeSort(arr);
-        } else if (alg.equals("MergeBU")) {
-            mergeSortBU(arr);
-        } else {
-            selectionSort(arr);
+        public Parameter(String[] args) {
+            for (var p : args) {
+                if (p.charAt(0) == '-') {
+                    show = true;
+                } else {
+                    int i = p.indexOf('=');
+                    if (i == -1 && p.equals("help")) {
+                        help();
+                        return;
+                    }
+                    String key = p.substring(0, i);
+                    String value = p.substring(i + 1);
+                    if (key.equals("alg")) {
+                        alg = value;
+                    } else if (key.equals("n")) {
+                        n = Integer.parseInt(value);
+                    } else if (key.equals("min")) {
+                        min = Double.parseDouble(value);
+                    } else if (key.equals("max")) {
+                        max = Double.parseDouble(value);
+                    }
+                }
+            }
         }
 
-        double time = watch.elapsedTime();
+        public void help() {
+            System.out.println(helpMsg);
+        }
 
-        assert isSorted(arr);
+        public void run() {
+            Double[] arr = MyRandom.randomDoubleArray(n, min, max);
+            StopWatch watch = new StopWatch();
 
-        if (show)
-            show(arr);
+            if (alg.equals("Insertion")) {
+                insertionSort(arr);
+            } else if (alg.equals("Shell")) {
+                shellSort(arr);
+            } else if (alg.equals("ShellPro")) {
+                shellSortPro(arr);
+            } else if (alg.equals("Merge")) {
+                mergeSort(arr);
+            } else if (alg.equals("MergeBU")) {
+                mergeSortBU(arr);
+            } else {
+                selectionSort(arr);
+            }
 
-        System.out.println("For " + n + " Doubles ranging from " + min + " to " + max);
-        System.out.println(alg + " 排序用时：" + time + " 秒");
+            double time = watch.elapsedTime();
+
+            assert isSorted(arr);
+
+            if (show)
+                show(arr);
+
+            System.out.println("For " + n + " Doubles ranging from " + min + " to " + max);
+            System.out.println(alg + " 排序用时：" + time + " 秒");
+
+        }
+    }
+
+    public static void main(String[] args) {
+        Parameter p = new Parameter(args);
+        p.run();
     }
 
     private static Comparable[] helpArr;
