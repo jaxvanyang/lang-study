@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class MySort {
     public static final String helpMsg = """
-            使用方式：java algs4.MySort [alg=xx] [n=xx] [min=xx] [max=xx] [-s|-show] [-i|-Int]""";
+            使用方式：java algs4.MySort [alg=xx] [n=xx] [min=xx] [max=xx] [-s|-show] [-i|-Int] [m=xx]""";
 
     private static class Parameter {
         int n = 10000;
@@ -37,6 +37,8 @@ public class MySort {
                         min = Double.parseDouble(value);
                     } else if (key.equals("max")) {
                         max = Double.parseDouble(value);
+                    } else if (key.equals("m")) {
+                        Quick.M = Integer.parseInt(value);
                     }
                 }
             }
@@ -68,6 +70,8 @@ public class MySort {
                 mergeSortBU(arr);
             } else if (alg.equals("Quick")) {
                 Quick.sort(arr);
+            } else if (alg.equals("QuickInsertion")) {
+                Quick.sortInsertion(arr);
             } else {
                 selectionSort(arr);
             }
@@ -123,6 +127,35 @@ public class MySort {
             int mid = partition(arr, left, right);
             sort(arr, left, mid - 1);
             sort(arr, mid + 1, right);
+        }
+
+        private static int M = 10;
+
+        private static void sortInsertion(Comparable[] arr, int left, int right) {
+            if (right - left < M) {
+                Insertion.sort(arr, left, right);
+                return;
+            }
+            int mid = partition(arr, left, right);
+            sort(arr, left, mid - 1);
+            sort(arr, mid + 1, right);
+        }
+
+        public static void sortInsertion(Comparable[] arr) {
+            sortInsertion(arr, 0, arr.length - 1);
+        }
+    }
+
+    public static class Insertion {
+        public static void sort(Comparable[] arr, int left, int right) {
+            for (int i = right; i > left; --i) {
+                var key = arr[right];
+                int j = i;
+                while (j > left && less(key, arr[j - 1])) {
+                    arr[j] = arr[--j];
+                }
+                arr[j] = key;
+            }
         }
     }
 
