@@ -1,19 +1,26 @@
 package algs4;
 
+import java.util.Arrays;
+
 public class MySort {
     public static final String helpMsg = """
-            使用方式：java algs4.MySort [alg=xx] [n=xx] [min=xx] [max=xx] [-s|-show]""";
+            使用方式：java algs4.MySort [alg=xx] [n=xx] [min=xx] [max=xx] [-s|-show] [-i|-Int]""";
 
     private static class Parameter {
         int n = 10000;
         double min = 0.0, max = 1.0;
         String alg = "Insertion";
         boolean show = false;
+        String type = "Double";
 
         public Parameter(String[] args) {
             for (var p : args) {
                 if (p.charAt(0) == '-') {
-                    show = true;
+                    if (p.equals("-s") || p.equals("-show")) {
+                        show = true;
+                    } else if (p.equals("-i") || p.equals("-Int")) {
+                        type = "Int";
+                    }
                 } else {
                     int i = p.indexOf('=');
                     if (i == -1 && p.equals("help")) {
@@ -40,7 +47,13 @@ public class MySort {
         }
 
         public void run() {
-            Double[] arr = MyRandom.randomDoubleArray(n, min, max);
+            Comparable[] arr;
+            // Double[] arr = MyRandom.randomDoubleArray(n, min, max);
+            if (type == "Double") {
+                arr = MyRandom.randomDoubleArray(n, min, max);
+            } else {
+                arr = MyRandom.randomIntegerArray(n, (int) min, (int) max);
+            }
             StopWatch watch = new StopWatch();
 
             if (alg.equals("Insertion")) {
@@ -53,6 +66,8 @@ public class MySort {
                 mergeSort(arr);
             } else if (alg.equals("MergeBU")) {
                 mergeSortBU(arr);
+            } else if (alg.equals("Quick")) {
+                Quick.sort(arr);
             } else {
                 selectionSort(arr);
             }
@@ -71,8 +86,44 @@ public class MySort {
     }
 
     public static void main(String[] args) {
+        // Integer[] arr = {1, 2, 3, 4};
+        // Quick.partition(arr, 0, 3);
+        // System.out.println(Arrays.toString(arr));
         Parameter p = new Parameter(args);
         p.run();
+    }
+
+    public static class Quick {
+        private static int partition(Comparable[] arr, int left, int right) {
+            var v = arr[left];
+            int l = left, r = right + 1;
+            while (true) {
+                while (less(arr[++l], v))
+                    if (l == right)
+                        break;
+                while (less(v, arr[--r]))
+                    if (r == left)
+                        break;
+                if (l >= r)
+                    break;
+                swap(arr, l, r);
+            }
+            // !: 这里要和 [r] 交换，因为 [r] 才小于等于 v，才能和 v 交换
+            swap(arr, left, r);
+            return r;
+        }
+
+        public static void sort(Comparable[] arr) {
+            sort(arr, 0, arr.length - 1);
+        }
+
+        private static void sort(Comparable[] arr, int left, int right) {
+            if (left >= right)
+                return;
+            int mid = partition(arr, left, right);
+            sort(arr, left, mid - 1);
+            sort(arr, mid + 1, right);
+        }
     }
 
     private static Comparable[] helpArr;

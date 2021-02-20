@@ -15,6 +15,8 @@ public class SortCompare {
             MySort.mergeSort(arr);
         } else if (alg.equals("MergeBU")) {
             MySort.mergeSortBU(arr);
+        } else if (alg.equals("Quick")) {
+            MySort.Quick.sort(arr);
         }
         assert MySort.isSorted(arr) : "arr is not sorted";
         return timer.elapsedTime();
