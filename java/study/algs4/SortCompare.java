@@ -39,30 +39,48 @@ public class SortCompare {
         return total;
     }
 
+    private static class Parameter {
+        static final String helpMsg = "How to use: java SortCompare [alg1 [alg2 [n [t]]]]";
+        String alg1 = "Insertion", alg2 = "Selection";
+        int n = 10000, t = 10;
+
+        Parameter(String[] args) {
+            if (args[0].equals("help")) {
+                help();
+                System.exit(0);
+            }
+            if (args.length >= 1) {
+                alg1 = args[0];
+            }
+            if (args.length >= 2) {
+                alg2 = args[1];
+            }
+            if (args.length >= 3) {
+                n = Integer.parseInt(args[2]);
+            }
+            if (args.length >= 4) {
+                t = Integer.parseInt(args[3]);
+            }
+        }
+
+        void run() {
+            double t1 = timeRandomInput(alg1, n, t);
+            double t2 = timeRandomInput(alg2, n, t);
+            System.out.printf("For %d random Doubles and running for %d times\n%s is ", n, t, alg1);
+            System.out.printf("%f times faster as %s\n", t2 / t1, alg2);
+            System.out.printf("%s uses %f s, %s uses %f s\n", alg1, t1, alg2, t2);
+        }
+
+        static void help() {
+            System.out.println(helpMsg);
+        }
+    }
+
     // 命令行参数分别为：
     // algs1：算法1； algs2：算法2； n：数组大小； t：排序次数
     public static void main(String[] args) {
-        String alg1 = "Insertion";
-        String alg2 = "Selection";
-        int n = 10000, t = 10;
 
-        if (args.length >= 1) {
-            alg1 = args[0];
-        }
-        if (args.length >= 2) {
-            alg2 = args[1];
-        }
-        if (args.length >= 3) {
-            n = Integer.parseInt(args[2]);
-        }
-        if (args.length >= 4) {
-            t = Integer.parseInt(args[3]);
-        }
-
-        double t1 = timeRandomInput(alg1, n, t);
-        double t2 = timeRandomInput(alg2, n, t);
-        System.out.printf("For %d random Doubles and running for %d times\n%s is ", n, t, alg1);
-        System.out.printf("%f times faster as %s\n", t2 / t1, alg2);
-        System.out.printf("%s uses %f s, %s uses %f s\n", alg1, t1, alg2, t2);
+        Parameter parameter = new Parameter(args);
+        parameter.run();
     }
 }
