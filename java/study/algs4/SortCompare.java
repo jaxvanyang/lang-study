@@ -19,6 +19,8 @@ public class SortCompare {
             MySort.Quick.sort(arr);
         } else if (alg.equals("QuickInsertion")) {
             MySort.Quick.sortInsertion(arr);
+        } else if (alg.equals("Quick3way")) {
+            MySort.Quick.sort3way(arr);
         }
         assert MySort.isSorted(arr) : "arr is not sorted";
         return timer.elapsedTime();

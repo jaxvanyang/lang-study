@@ -72,6 +72,8 @@ public class MySort {
                 Quick.sort(arr);
             } else if (alg.equals("QuickInsertion")) {
                 Quick.sortInsertion(arr);
+            } else if (alg.equals("Quick3way")) {
+                Quick.sort3way(arr);
             } else {
                 selectionSort(arr);
             }
@@ -115,6 +117,33 @@ public class MySort {
             // !: 这里要和 [r] 交换，因为 [r] 才小于等于 v，才能和 v 交换
             swap(arr, left, r);
             return r;
+        }
+
+        // 三向切分的快速排序，用于存在大量元素的数组性能很高，对于平均情况则差强人意
+        public static void sort3way(Comparable[] arr) {
+            sort3way(arr, 0, arr.length - 1);
+        }
+
+        public static void sort3way(Comparable[] arr, int l, int r) {
+            if (l >= r) {
+                return;
+            }
+            int lt = l, i = l + 1, gt = r;
+            var v = arr[l];
+            // [l, lt - 1] < v; [lt, i - 1] == v; [i, gt] ? v; [gt + 1, r] > v;
+            // [l, lt - 1] < v; [lt, gt] == v; [gt + 1, r] > v;
+            while (i <= gt) {
+                int cmp = v.compareTo(arr[i]);
+                if (cmp < 0) {
+                    swap(arr, i, gt--);
+                } else if (cmp == 0) {
+                    ++i;
+                } else {
+                    swap(arr, lt++, i++);
+                }
+            }
+            sort3way(arr, l, lt - 1);
+            sort3way(arr, gt + 1, r);
         }
 
         public static void sort(Comparable[] arr) {
