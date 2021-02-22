@@ -1,13 +1,24 @@
 #include <iostream>
-#include <map>
+// #include <map>
+#include <climits>
 #include <vector>
 
 using namespace std;
+const int maxn = 1e4 + 5;
+
+int graph[maxn][maxn];
 
 int main() {
+  for (int i = 0; i < maxn; ++i) {
+    for (int j = 0; j < maxn; ++j) {
+      graph[i][j] = INT_MAX;
+    }
+  }
   int s, t, n;
   scanf("%d%d%d", &s, &t, &n);
-  map<int, map<int, int>> graph;  // city -> nexts = [next city -> fee]
+  // map<int, map<int, int>> graph;  // city -> nexts = [next city -> fee]
+  // vector<vector<int>> graph(maxn, vector<int>(maxn, INT_MAX));
+
   for (int i = 0; i < n; ++i) {
     int fee, cityCnt;
     scanf("%d%d", &fee, &cityCnt);
@@ -18,32 +29,20 @@ int main() {
       cities.push_back(city);
     }
 
-    for (int j = 0; j < cityCnt - 1; ++j) {
+    for (int j = 0; j < cityCnt; ++j) {
+      int p = cities[j];
       for (int k = j + 1; k < cityCnt; ++k) {
-        if (graph.count(cities[j]) == 0) {
-          graph[cities[j]] = {{cities[k], fee}};
-        } else if (graph[cities[j]].count(cities[k]) == 0) {
-          graph[cities[j]].insert({cities[k], fee});
-        } else if (graph[cities[j]][cities[k]] > fee) {
-          graph[cities[j]][cities[k]] = fee;
-        }
+        int q = cities[k];
+        graph[p][q] = min(graph[p][q], fee);
       }
     }
   }
 
-  int ans = -1;
-  if (graph.count(s) && graph[s].count(t)) {
-    ans = graph[s][t];
-  }
-  for (auto &next : graph[s]) {
-    int city = next.first;
-    int fee = next.second;
-    if (graph[city].count(t)) {
-      if (ans == -1) {
-        ans = fee + graph[city][t];
-      } else {
-        ans = min(ans, fee + graph[city][t]);
-      }
+  int ans = graph[s][t];
+  // cout << ans << endl;
+  for (int i = 0; i < maxn; ++i) {
+    if (graph[s][i] != INT_MAX && graph[i][t] != INT_MAX) {
+      ans = min(ans, graph[s][i] + graph[i][t]);
     }
   }
 
