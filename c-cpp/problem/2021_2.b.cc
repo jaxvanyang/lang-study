@@ -1,93 +1,66 @@
 #include <iostream>
+#include <set>
 #include <vector>
 
 using namespace std;
 
-const int maxn = 1e4 + 5;
+int ans = INT32_MAX;
 
-class Graph {
+class Air {
  public:
-  int v, e;
-  vector<vector<vector<int>>> adj;
-  Graph(int v) : v(v) {
-    e = 0;
-    adj = vector<vector<vector<int>>>(v);
-  }
-
-  void updateEdge(int p, int q, int fee) {
-    int idx = -1;
-    for (int i = 0; i < adj[p].size(); ++i) {
-      if (adj[p][i][0] == q) {
-        idx = i;
-        break;
+  vector<int> cities;
+  int sId = -1, tId = -1;
+  int fee;
+  Air(int s, int t) {
+    int cityCnt;
+    scanf("%d%d", &fee, &cityCnt);
+    int city;
+    for (int j = 0; j < cityCnt; ++j) {
+      scanf("%d", &city);
+      if (city == s) {
+        sId = j;
+      } else if (city == t) {
+        tId = j;
       }
+      cities.push_back(city);
     }
-    if (idx == -1) {
-      adj[p].push_back({q, fee});
-    } else {
-      adj[p][idx][1] = min(adj[p][idx][1], fee);
+    if (sId != -1 && tId != -1 && sId < tId) {
+      ans = min(ans, fee);
     }
-  }
-
-  int getFee(int p, int q) {
-    for (int i = 0; i < adj[p].size(); ++i) {
-      if (adj[p][i][0] == q) {
-        return adj[p][i][1];
-      }
-    }
-    return -1;
-  }
-
-  int getAns(int s, int t) {
-    int ans = -1;
-    for (int i = 0; i < adj[s].size(); ++i) {
-      int city = adj[s][i][0];
-      int fee = adj[s][i][1];
-      for (int j = 0; j < adj[city].size(); ++j) {
-        if (adj[city][j][0] == t) {
-          if (ans == -1) {
-            ans = fee + adj[city][j][1];
-          } else {
-            ans = min(ans, fee + adj[city][j][1]);
-          }
-        }
-      }
-    }
-    return ans;
   }
 };
 
 int main() {
   int s, t, n;
   scanf("%d%d%d", &s, &t, &n);
-  Graph graph = Graph(maxn);
+  vector<Air> airs;
+  for (int i = 0; i < n; ++i) {
+    airs.push_back(Air(s, t));
+  }
 
   for (int i = 0; i < n; ++i) {
-    int fee, cityCnt;
-    scanf("%d%d", &fee, &cityCnt);
-    vector<int> cities;
-    int city;
-    for (int j = 0; j < cityCnt; ++j) {
-      scanf("%d", &city);
-      cities.push_back(city);
-    }
+    for (int j = 0; j < n; ++j) {
+      if (i == j) {
+        continue;
+      }
+      if (airs[i].sId == -1 || airs[j].tId == -1) {
+        continue;
+      }
+      set<int> st;
+      for (int k = airs[i].sId + 1; k < airs[i].cities.size(); ++k) {
+        st.insert(airs[i].cities[k]);
+      }
 
-    for (int j = 0; j < cityCnt; ++j) {
-      int p = cities[j];
-      for (int k = j + 1; k < cityCnt; ++k) {
-        int q = cities[k];
-        graph.updateEdge(p, q, fee);
+      for (int k = 0; k < airs[j].tId; ++k) {
+        if (st.count(airs[j].cities[k])) {
+          ans = min(ans, airs[i].fee + airs[j].fee);
+          break;
+        }
       }
     }
   }
-
-  int ans = graph.getFee(s, t);
-
-  if (ans == -1) {
-    ans = graph.getAns(s, t);
-  } else {
-    ans = min(ans, graph.getAns(s, t));
-  }
-
-  printf("%d\n", ans);
+  if (ans != INT32_MAX)
+    printf("%d\n", ans);
+  else
+    printf("-1\n");
 }
