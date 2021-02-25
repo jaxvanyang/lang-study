@@ -20,7 +20,8 @@ int main() {
     index.push_back(index.back() + nums[i]);
   }
 
-  // 存放 [l, r] 中的最小值
+  // 存放 [l, r] 中对最小值有贡献的元素
+  // queMin.front 始终是 [l, r] 中的最小值，在每次移动时维护这个性质即可
   deque<int> queMin;
   for (int i = 1; i <= n; ++i) {
     // 单调队列需要和队尾比较，因为可能出现新元素不小于队首但小于队尾的情况，这时依然需要更新队列

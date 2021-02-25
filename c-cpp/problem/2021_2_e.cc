@@ -48,11 +48,6 @@ int main() {
     idx.push_back(idx.back() + num);
   }
 
-  // for (auto &num : idx) {
-  //   cout << num << ' ';
-  // }
-  // cout << endl;
-
   for (int i = 0; i < n; ++i) {
     ll num;
     scanf("%lld", &num);
@@ -61,10 +56,6 @@ int main() {
 
   tree = vector<ll>(4 * n);
   build(0, n - 1, 1);
-  // for (int i = 0; i < 4 * n; ++i) {
-  //   cout << tree[i] << ' ';
-  // }
-  // cout << endl;
 
   int q;
   scanf("%d", &q);
@@ -74,8 +65,5 @@ int main() {
     ll a = idx[x2] - idx[x1 - 1];
     ll b = getGcd(y1 - 1, y2 - 1, 0, n - 1, 1);
     printf("%lld\n", a * b);
-    // cout << "a = " << a << " b = " << b << endl;
-    // printf("%lld\n",
-    //        (idx[x2] - idx[x1 - 1]) * getGcd(y1 - 1, y2 - 1, 0, n - 1, 1));
   }
 }
