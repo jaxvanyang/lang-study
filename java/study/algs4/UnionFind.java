@@ -2,6 +2,7 @@ package algs4;
 
 /**
  * UnionFind
+ * 并查集
  */
 public class UnionFind {
 
