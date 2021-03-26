@@ -1,43 +1,43 @@
 const http = require('http');
 const fs = require('fs');
+const mime = require('mime');
+const path = require('path');
 const cache = {};
 
 const port = 8080;
 
 function send404(res) {
-    res.writeHead(404, {'Content-Type': 'text/plain'});
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.write('404! Page not found');
     res.end();
 }
 
-function sendPage(res, pagePath) {
-    console.log();
-    res.writeHead(200, {'Contnt-Type': 'text/html'});
-    // res.write(pageContent);
-    res.end(pageContent);
+function sendFile(res, filePath, fileContent) {
+    res.writeHead(200, { 'Content-Type': mime.getType(path.basename(filePath)) });
+    res.end(fileContent);
 }
 
 const server = http.createServer((req, res) => {
-    console.log('new request recieved');
-    // send404(res);
-    var pagePath;
-    var pageContent = 'ERROR!';
+    console.log('req.url = ' + req.url);
+    var filePath;
     if (req.url == '/') {
-        pagePath = 'main.html';
+        filePath = 'main.html';
     } else {
-        pagePath = req.url;
+        filePath = req.url;
     }
-    pagePath = './' + pagePath;
-    if (cache[pagePath]) {
-        sendPage(res, cache[pagePath])
+    if (filePath[0] == '/') {
+        filePath = '.' + filePath;
     } else {
-        fs.readFile(pagePath, (err, data) => {
-            if (err) throw err;
+        filePath = './' + filePath;
+    }
+    if (cache[filePath]) {
+        sendFile(res, filePath, cache[filePath])
+    } else {
+        fs.readFile(filePath, (err, data) => {
+            if (err) console.log('file: ' + filePath + ' not found');
             else {
-                cache[pagePath] = data;
-                // console.log(data);
-                // console.log(cache[pagePath]);
-                sendPage(res, cache[pagePath]);
+                cache[filePath] = data;
+                sendFile(res, filePath, cache[filePath]);
             }
         });
     }
