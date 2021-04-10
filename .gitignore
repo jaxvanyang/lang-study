@@ -5,6 +5,9 @@
 *\.txt
 *\.log
 
+# vscode
+.vscode/
+
 # 最常用的临时代码
 a.*
 
