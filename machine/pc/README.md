@@ -15,6 +15,12 @@ PC
     sudo apt install ./<file>.deb
     ```
 
+2. 更改默认编辑器：  
+    ```bash
+    # 输入命令后根据提示更改
+    sudo update-alternatives --config editor
+    ```
+
 ## 配置日志
 
 ### 1. 终端配置
