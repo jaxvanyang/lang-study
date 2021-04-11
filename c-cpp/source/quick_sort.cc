@@ -1,29 +1,38 @@
-/* 
+/*
  * TODO:
  * 1. 随机化
  * 2. 泛型化
  * 3. 迭代器化
  * 4. 编写异常处理
+ * 5. 头文件分离
+ * 6. 排序最小的 k 个元素
+ * 7. 封装到类中
+ * 8. 解析命令行参数
  */
 
 #include <iostream>
 #include <vector>
 
-void quick_sort(std::vector<int> &arr, const int l, const int r) {
+template <typename T>
+void quick_sort(std::vector<T> &arr, const size_t l, const size_t r) {
   if (l >= r) {
     return;
   }
 
-  const int val = arr[r];
-  int i = (int)l - 1;
-  for (size_t j = l; j < r; ++j) {
-    if (arr[j] <= val) {
-      std::swap(arr[++i], arr[j]);
+  const T val = arr[l];
+  size_t i = r + 1;
+  for (size_t j = r; j > l; --j) {
+    if (arr[j] >= val) {
+      std::swap(arr[--i], arr[j]);
     }
   }
-  std::swap(arr[i + 1], arr[r]);
-  quick_sort(arr, l, i);
-  quick_sort(arr, i + 2, r);
+  std::swap(arr[l], arr[i - 1]);
+
+  // 使用无符号整型必须对减法特判
+  if (i >= 2) {
+    quick_sort(arr, l, i - 2);
+  }
+  quick_sort(arr, i, r);
 }
 
 bool sort_check(const std::vector<int> &arr) {
@@ -44,6 +53,8 @@ int main(const int argc, const char *argv[]) {
   }
 
   quick_sort(arr, 0, n - 1);
+
+  std::cout << "n = " << n << std::endl;
 
   if (!sort_check(arr)) {
     std::cerr << "Error: quick_sort() not sorted" << std::endl;

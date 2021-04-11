@@ -1,3 +1,7 @@
+/*
+ * Used for generator sort data
+ */
+
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -7,7 +11,7 @@ using ll = long long;
 ll random(ll n) { return (ll)random() * random() % n; }
 
 int main() {
-  int n = 1000, size = 1e6;
+  int n = 1000, size = 1e4;
   srand(time(nullptr));
   FILE *file = fopen("data.in", "w");
 
