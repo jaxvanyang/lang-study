@@ -1,3 +1,6 @@
-cp -r ~/.zshrc ~/repos/backup/.zshrc
-cp ~/.vimrc ~/repos/backup/.vimrc
-cp ~/.gitconfig ~/repos/backup/.gitconfig
+# TODO: add parameter test and repo existence
+
+cp -r ~/.zshrc ~/repos/lang-study/machine/$1/.zshrc
+cp ~/.vimrc ~/repos/lang-study/machine/$1/.vimrc
+# there are no .gitconfig on pc
+cp ~/.gitconfig ~/repos/lang-study/machine/$1/.gitconfig
