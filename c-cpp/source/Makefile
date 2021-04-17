@@ -12,6 +12,9 @@ quick_sort_test : quick_sort.out random.out
 test.out : test.cc
 	g++ test.cc -o test.out
 
+kmp.out : kmp.cc
+	g++ kmp.cc -o kmp.out
+
 clean :
 	rm *.out *.exe
 
