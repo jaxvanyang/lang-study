@@ -11,7 +11,7 @@ using ll = long long;
 ll random(ll n) { return (ll)random() * random() % n; }
 
 int main() {
-  int n = 1000, size = 1e4;
+  int n = 100, size = 10000;
   srand(time(nullptr));
   FILE *file = fopen("data.in", "w");
 
@@ -20,6 +20,8 @@ int main() {
   for (int i = 0; i < size; ++i) {
     fprintf(file, "%lld\n", random(n));
   }
+
+  fprintf(file, "%lld\n", random(size));  // used for find_k_smallest
 
   fclose(file);
 }

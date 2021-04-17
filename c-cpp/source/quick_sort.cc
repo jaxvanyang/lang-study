@@ -8,31 +8,42 @@
  * 6. 排序最小的 k 个元素
  * 7. 封装到类中
  * 8. 解析命令行参数
+ * 9. 可读性优化
+ * 10. 参考谷歌风格命名
  */
 
 #include <iostream>
 #include <vector>
+#include <cassert>
+
+// 使用前必须进行范围判断
+template <typename T>
+size_t partion(std::vector<T> &arr, const size_t left, const size_t right) {
+  // std::cout << "l = " << l << " r = " << r << std::endl;
+  const T val = arr[left];
+  size_t pivot = right + 1;
+  for (size_t i = right; i > left; --i) {
+    if (arr[i] >= val) {
+      std::swap(arr[--pivot], arr[i]);
+    }
+  }
+  std::swap(arr[left], arr[--pivot]);  // pivot 不会小于 0
+
+  return pivot;
+}
 
 template <typename T>
-void quick_sort(std::vector<T> &arr, const size_t l, const size_t r) {
-  if (l >= r) {
+void quick_sort(std::vector<T> &arr, const size_t left, const size_t right) {
+  if (left >= right) {
     return;
   }
 
-  const T val = arr[l];
-  size_t i = r + 1;
-  for (size_t j = r; j > l; --j) {
-    if (arr[j] >= val) {
-      std::swap(arr[--i], arr[j]);
-    }
+  const size_t pivot = partion(arr, left, right);
+  // 注意不能用减法
+  if (left + 1 < pivot) {
+    quick_sort(arr, left, pivot - 1);
   }
-  std::swap(arr[l], arr[i - 1]);
-
-  // 使用无符号整型必须对减法特判
-  if (i >= 2) {
-    quick_sort(arr, l, i - 2);
-  }
-  quick_sort(arr, i, r);
+  quick_sort(arr, pivot + 1, right);
 }
 
 bool sort_check(const std::vector<int> &arr) {
@@ -44,6 +55,21 @@ bool sort_check(const std::vector<int> &arr) {
   return true;
 }
 
+// 找出最小的 k 个元素
+template <typename T>
+void find_k_smallest(std::vector<T> &arr, const size_t left, const size_t right, const size_t k) {
+  size_t pivot = partion(arr, left, right);
+  size_t cnt = pivot - left;
+  if (k <= cnt && 1 < cnt) {
+    find_k_smallest(arr, left, pivot - 1, k);
+  } else if (cnt + 1 < k) {
+    find_k_smallest(arr, pivot + 1, right, k - cnt - 1);
+  }
+
+}
+
+bool testK(std::vector<int> &arr, size_t k);
+
 int main(const int argc, const char *argv[]) {
   size_t n;
   std::cin >> n;
@@ -52,16 +78,24 @@ int main(const int argc, const char *argv[]) {
     std::cin >> arr[i];
   }
 
-  quick_sort(arr, 0, n - 1);
+  // quick_sort(arr, 0, n - 1);
+  // assert(!sort_check(arr));  
 
-  std::cout << "n = " << n << std::endl;
 
-  if (!sort_check(arr)) {
-    std::cerr << "Error: quick_sort() not sorted" << std::endl;
-    return -1;
-  }
-
+  size_t k;
+  std::cin >> k;
+  find_k_smallest(arr, 0, arr.size() - 1, k);
   for (size_t i = 0; i < n; ++i) {
     std::cout << arr[i] << std::endl;
   }
+
+  assert(testK(arr, k));
+}
+
+bool testK(std::vector<int> &arr, size_t k) {
+  quick_sort(arr, 0, k);
+  const std::vector<int> before(arr.begin(), arr.begin() + k);
+  quick_sort(arr, 0, arr.size() - 1);
+  const std::vector<int> after(arr.begin(), arr.begin() + k);
+  return before == after;
 }

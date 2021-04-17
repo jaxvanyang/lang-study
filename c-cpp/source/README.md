@@ -5,6 +5,7 @@
 ## Target
 1. [ ] 快速排序（quick_sort.out）
 2. [ ] 线性代数（linear_algebra.out）
+3. [ ] 熟悉断言的使用
 
 ## Structure
 - `.gitignore`
