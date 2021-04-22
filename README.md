@@ -3,7 +3,7 @@ A repository used to study several language
 
 ## TODOs
 - [ ] 完善 README.md  
-- [ ] 添加系统配置备份的脚本
+- [ ] 完善系统配置备份的脚本
 
 ## Repository Structure
 - [C\C++](c-cpp)  
