@@ -1,6 +1,7 @@
 {
-    "python.autoComplete.extraPaths": [
-        "./python/file"
+    "python.analysis.extraPaths": [
+        "./python/",
+        "./python/src/",
     ],
     "jupyter.jupyterServerType": "local",
     "files.associations": {

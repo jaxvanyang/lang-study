@@ -1,2 +1,6 @@
 # 不同机器上编译器和标准库文件路径不同
 c_cpp_properties.json
+
+# 不同机器上编译和运行的方式不同
+launch.json
+tasks.json
