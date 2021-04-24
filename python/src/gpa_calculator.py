@@ -1,4 +1,5 @@
 from course import *
+import json
 
 
 def parse_courses_txt(file: str = 'courses-info.txt'):
@@ -6,7 +7,7 @@ def parse_courses_txt(file: str = 'courses-info.txt'):
     解析 txt 形式的课程信息
     '''
     raw_courses = []
-    f = open(file, 'r')
+    f = open(file, 'r', encoding='utf-8')
     line = f.readline()
     while line:
         raw_courses.append(line.split())
@@ -99,8 +100,16 @@ def print_courses_statistics(courses_statistics: dict):
         print('\n')
 
 
+def save_courses(courses: dict, file: str = 'courses.json'):
+    # 注意编码问题
+    f = open(file, 'w', encoding='utf-8')
+    json.dump(courses, f, ensure_ascii=False)
+
+
 def main():
     courses = parse_courses_txt()
+    # f = open('courses.json', 'r', encoding='utf-8')
+    # courses = json.load(f)
     courses_statistics = analysis_courses(courses)
     courses_statistics_no_elective = analysis_courses(
         [course for course in courses if course['course_attr'] != '公选'],
@@ -108,6 +117,7 @@ def main():
     )
     print_courses_statistics(courses_statistics)
     print_courses_statistics(courses_statistics_no_elective)
+    save_courses(courses)
 
 
 if __name__ == '__main__':
