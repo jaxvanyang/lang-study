@@ -68,7 +68,8 @@ def get_courses(account: str, password: str):
         course = new_course(
             [get_item(row, col) for col in range(1, 18)]
         )
-        if course['grade'] == '0':
+        if course['grade'] == 0:
+            global flag
             flag = True
             continue
         courses.append(course)
