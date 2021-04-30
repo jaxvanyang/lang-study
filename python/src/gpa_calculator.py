@@ -254,8 +254,10 @@ def msg():
 
 if __name__ == '__main__':
     msg()
-    account = input('请输入帐号（输入一行后按“Enter”确认）：')
-    password = getpass('请输入密码（为了防止密码泄露，输入的密码是隐藏的，输完后按“Enter”确认即可）：')
+    print('（输入一行后按“Enter”确认）')
+    account = input('请输入帐号：')
+    print('（为了防止密码泄露，输入的密码是隐藏的，输完后按“Enter”确认即可）')
+    password = getpass('请输入密码：')
 
     try:
         main(get_courses(account, password))
