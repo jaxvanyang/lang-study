@@ -8,6 +8,8 @@ from selenium.webdriver import Edge
 # 可选的浏览器驱动
 # from selenium.webdriver import Chrome
 
+flag = False
+
 
 def get_courses(account: str, password: str):
     """ 
@@ -66,6 +68,9 @@ def get_courses(account: str, password: str):
         course = new_course(
             [get_item(row, col) for col in range(1, 18)]
         )
+        if course['grade'] == '0':
+            flag = True
+            continue
         courses.append(course)
 
     # 使用 Edge时，退出会产生编码错误，尚不清楚原因
@@ -231,6 +236,8 @@ def main(courses: list):
     f = open('data.txt', 'w', encoding='utf-8')
     save_courses_statistics(courses_statistics, sorted_key, f)
     save_courses_statistics(courses_statistics_no_elective, sorted_key, f)
+    if flag:
+        f.write('已去除挂科课程')
     f.close()
 
 
@@ -254,6 +261,10 @@ if __name__ == '__main__':
         main(get_courses(account, password))
     except:
         print('获取网页信息异常！可能是账密有误，或者网络连接异常，请稍后再试。')
+
+    if flag:
+        print('已去除挂科课程')
+
 
     print('你也可以通过生成在当前目录下的“data.txt”查看计算结果')
     input('按“Enter”关闭窗口：')
