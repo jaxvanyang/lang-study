@@ -23,6 +23,26 @@ translation = {
     'contains_elective': '是否包括公选课',
 }
 
+col_to_key = (
+    'no',
+    'term',
+    'id',
+    'name',
+    'group_name',
+    'score',
+    'study_type',
+    'score_id',
+    'credit',
+    'total_study_hour',
+    'grade',
+    'restudy_term',
+    'exam_type',
+    'exam_property',
+    'course_attr',
+    'course_property',
+    'course_type',
+)
+
 
 def new_course(
         term: str,
@@ -63,6 +83,30 @@ def new_course(
         'course_attr': course_attr,
         'course_property': course_property,
         'course_type': course_type,
+    }
+
+def new_course(li: list):
+    """ 
+    创建一个表示课程信息的字典
+    """
+    return {
+        'no': int(li[0]),
+        'term': li[1],
+        'id': li[2],
+        'name': li[3],
+        'group_name': li[4],
+        'score': float(li[5]),
+        'study_type': li[6],
+        'score_id': li[7],
+        'credit': float(li[8]),
+        'total_study_hour': int(li[9]),
+        'grade': float(li[10]),
+        'restudy_term': li[11],
+        'exam_type': li[12],
+        'exam_property': li[13],
+        'course_attr': li[14],
+        'course_property': li[15],
+        'course_type': li[16],
     }
 
 

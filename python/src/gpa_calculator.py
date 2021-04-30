@@ -1,5 +1,70 @@
 from course import *
+import os
+import sys
 import json
+import time
+from selenium import webdriver
+from selenium.webdriver.chrome.webdriver import WebDriver
+
+
+def get_courses(account: str, password: str):
+    """ 
+    从网络上爬取课程成绩信息
+    :return: <dict> 记录了课程成绩信息的字典
+    """
+    div = '/html/body/div'  # 课程成绩信息分区的 xpath
+    table = '//*[@id="dataList"]/tbody'  # 课程成绩信息表格的 xpath
+    url = 'http://xk.csust.edu.cn/'  # 教学一体化服务平台网址
+
+    """ 
+    获取一个到达课程成绩信息位置的 driver
+    """
+    # 根据本地安装的浏览器选择 driver
+    driver = webdriver.Chrome()
+
+    # 使用 driver 访问网址并登录
+    driver.get(url)
+    driver.find_element_by_id('userAccount').send_keys(account)
+    driver.find_element_by_id('userPassword').send_keys(password)
+    driver.find_element_by_xpath('//*[@id="ul1"]/li[5]/button').click()
+    time.sleep(1)
+
+    # 切换到课程成绩信息页面
+    driver.switch_to.frame('Frame0')
+    driver.find_element_by_xpath(
+        '/html/body/div[2]/div[2]/div[1]/div[2]/div/div/div[2]').click()
+    time.sleep(1)
+
+    # 查询课程成绩
+    driver.switch_to.default_content()
+    driver.switch_to.frame('Frame1')
+    driver.switch_to.frame('cjcx_query_frm')
+    driver.find_element_by_xpath('//*[@id="btn_query"]').click()
+    time.sleep(1)
+
+    # 导航到数据页面
+    driver.switch_to.parent_frame()
+    driver.switch_to.frame('cjcx_list_frm')
+
+    def get_item(row: int, col: int):
+        return driver.find_element_by_xpath(f'{table}/tr[{row}]/td[{col}]').text
+
+    # TODO：使用课程成绩分区的信息判断计算是否正确
+    div_text = driver.find_element_by_xpath(div).text
+    div_list = div_text.splitlines()
+    div_size = len(div_list)
+
+    # 提取课程成绩信息
+    print('请稍等片刻，爬取信息需要时间')
+    courses = []
+    for row in range(2, div_size):
+        course = new_course(
+            [get_item(row, col) for col in range(1, 18)]
+        )
+        courses.append(course)
+    driver.quit()
+
+    return courses
 
 
 def parse_courses_txt(file: str = 'courses-info.txt'):
@@ -92,11 +157,12 @@ def analysis_courses(courses: list, contains_elective: bool = True):
 
 
 def print_courses_statistics(courses_statistics: dict):
-    for condition in courses_statistics:
-        print(f'条件：{condition}')
+    sorted_key = sorted(courses_statistics.keys())
+    for condition in sorted_key:
+        print(f'查询学期或学年：{condition}')
         for key in courses_statistics[condition]:
             val = courses_statistics[condition][key]
-            print(f'{translation[key]}：{val}； ', end='')
+            print(f'{translation[key]}：{val}；')
         print('\n')
 
 
@@ -106,8 +172,9 @@ def save_courses(courses: dict, file: str = 'courses.json'):
     json.dump(courses, f, ensure_ascii=False)
 
 
-def main():
-    courses = parse_courses_txt()
+def main(courses: list):
+    # courses = parse_courses_txt()
+    # courses = get_courses()
     # f = open('courses.json', 'r', encoding='utf-8')
     # courses = json.load(f)
     courses_statistics = analysis_courses(courses)
@@ -121,4 +188,14 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    account = input('请输入帐号：')
+    password = input('请输入密码：')
+    if sys.platform == 'linux':
+        os.system('clear')
+    else:
+        os.system('cls')
+
+    try:
+        main(get_courses(account, password))
+    except:
+        print('获取网页信息异常！可能是账密有误，或者网络连接异常，请稍后再试。')
