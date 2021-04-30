@@ -1,11 +1,9 @@
 from course import *
-import os
-import sys
+from os import system
+from getpass import getpass
 import json
-import time
+from time import sleep
 from selenium import webdriver
-from selenium.webdriver.chrome.webdriver import WebDriver
-
 
 def get_courses(account: str, password: str):
     """ 
@@ -19,28 +17,28 @@ def get_courses(account: str, password: str):
     """ 
     获取一个到达课程成绩信息位置的 driver
     """
-    # 根据本地安装的浏览器选择 driver
-    driver = webdriver.Chrome()
+    # 根据本地安装的浏览器选择驱动
+    driver = webdriver.Edge(executable_path='./drivers/msedgedriver.exe')
 
     # 使用 driver 访问网址并登录
     driver.get(url)
     driver.find_element_by_id('userAccount').send_keys(account)
     driver.find_element_by_id('userPassword').send_keys(password)
     driver.find_element_by_xpath('//*[@id="ul1"]/li[5]/button').click()
-    time.sleep(1)
+    sleep(1)
 
     # 切换到课程成绩信息页面
     driver.switch_to.frame('Frame0')
     driver.find_element_by_xpath(
         '/html/body/div[2]/div[2]/div[1]/div[2]/div/div/div[2]').click()
-    time.sleep(1)
+    sleep(1)
 
     # 查询课程成绩
     driver.switch_to.default_content()
     driver.switch_to.frame('Frame1')
     driver.switch_to.frame('cjcx_query_frm')
     driver.find_element_by_xpath('//*[@id="btn_query"]').click()
-    time.sleep(1)
+    sleep(1)
 
     # 导航到数据页面
     driver.switch_to.parent_frame()
@@ -62,7 +60,12 @@ def get_courses(account: str, password: str):
             [get_item(row, col) for col in range(1, 18)]
         )
         courses.append(course)
-    driver.quit()
+
+    # 使用 Edge时，退出会产生编码错误，尚不清楚原因
+    try:
+        driver.quit()
+    except:
+        pass
 
     return courses
 
@@ -186,16 +189,25 @@ def main(courses: list):
     print_courses_statistics(courses_statistics_no_elective)
     save_courses(courses)
 
+def msg():
+    print('\033[1;41;0m！！！！！！！！！！！使用须知：\033[0m')
+    print()
+    print('使用前请确认安装了最新版本的 Edge')
+    print('不清楚自己 Edge 浏览器版本号的同学可以在 Edge 地址栏输入以下地址查看：\nedge://settings/help')
+    print()
+    print('脚本会自动打开浏览器查询，完成后自动关闭浏览器')
+    print('查询会花费一定时间，请不要提前关闭浏览器')
+    print()
 
 if __name__ == '__main__':
-    account = input('请输入帐号：')
-    password = input('请输入密码：')
-    if sys.platform == 'linux':
-        os.system('clear')
-    else:
-        os.system('cls')
+    msg()
+    account = input('请输入帐号（输入一行后按“Enter”确认）：')
+    password = getpass('请输入密码（为了防止密码泄露，输入的密码是隐藏的，输完后按“Enter”确认即可）：')
+    system('clear')
 
     try:
         main(get_courses(account, password))
     except:
         print('获取网页信息异常！可能是账密有误，或者网络连接异常，请稍后再试。')
+
+    input()
