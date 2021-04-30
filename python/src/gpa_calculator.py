@@ -1,9 +1,13 @@
+from io import TextIOWrapper
 from course import *
-from os import system
 from getpass import getpass
 import json
 from time import sleep
-from selenium import webdriver
+from selenium.webdriver import Edge
+
+# 可选的浏览器驱动
+# from selenium.webdriver import Chrome
+
 
 def get_courses(account: str, password: str):
     """ 
@@ -18,7 +22,9 @@ def get_courses(account: str, password: str):
     获取一个到达课程成绩信息位置的 driver
     """
     # 根据本地安装的浏览器选择驱动
-    driver = webdriver.Edge(executable_path='./drivers/msedgedriver.exe')
+    driver = Edge(executable_path='./drivers/msedgedriver.exe')
+    # driver = Chrome()
+
 
     # 使用 driver 访问网址并登录
     driver.get(url)
@@ -47,6 +53,7 @@ def get_courses(account: str, password: str):
     def get_item(row: int, col: int):
         return driver.find_element_by_xpath(f'{table}/tr[{row}]/td[{col}]').text
 
+    driver.minimize_window()
     # TODO：使用课程成绩分区的信息判断计算是否正确
     div_text = driver.find_element_by_xpath(div).text
     div_list = div_text.splitlines()
@@ -114,6 +121,9 @@ def calculate_gpa(courses: list, contains_elective: bool = True):
     total_scores = 0
     course_amount = len(courses)
     for course in courses:
+        if (not contains_elective) and course['course_attr'] == '公选':
+            course_amount -= 1
+            continue
         total_credits += course['credit']
         total_grades += course['credit'] * course['grade']
 
@@ -124,7 +134,7 @@ def calculate_gpa(courses: list, contains_elective: bool = True):
         'total_credits': total_credits,
         'gpa': total_grades / total_credits,
         'score_average': total_scores / course_amount,
-        'contains_elective': contains_elective,
+        # 'contains_elective': contains_elective,
     }
 
 
@@ -159,14 +169,41 @@ def analysis_courses(courses: list, contains_elective: bool = True):
     return courses_statistics
 
 
-def print_courses_statistics(courses_statistics: dict):
-    sorted_key = sorted(courses_statistics.keys())
+def print_courses_statistics(courses_statistics: dict, sorted_key: list):
+    """ 
+    输出统计数据
+    """
+    # for condition in sorted_key:
+    #     print(f'查询学期或学年：{condition}')
+    #     for key in courses_statistics[condition]:
+    #         val = courses_statistics[condition][key]
+    #         print(f'{translation[key]}：{val}；')
+    #     print('\n')
+    print('查询学期或学年  所修门数        所修总学分      平均学分绩点    平均成绩')
     for condition in sorted_key:
-        print(f'查询学期或学年：{condition}')
-        for key in courses_statistics[condition]:
-            val = courses_statistics[condition][key]
-            print(f'{translation[key]}：{val}；')
-        print('\n')
+        data = courses_statistics[condition]
+        print('%-16s%-16d%-16.1f%-16f%-16f' % (
+            condition,
+            data['course_amount'],
+            data['total_credits'],
+            data['gpa'],
+            data['score_average']
+        ))
+        print()
+
+
+def save_courses_statistics(courses_statistics: dict, sorted_key: list, f: TextIOWrapper):
+    f.write('查询学期或学年  所修门数        所修总学分      平均学分绩点    平均成绩\n')
+    for condition in sorted_key:
+        data = courses_statistics[condition]
+        f.write('%-16s%-16d%-16.1f%-16f%-16f\n' % (
+            condition,
+            data['course_amount'],
+            data['total_credits'],
+            data['gpa'],
+            data['score_average']
+        ))
+        f.write('\n')
 
 
 def save_courses(courses: dict, file: str = 'courses.json'):
@@ -176,18 +213,26 @@ def save_courses(courses: dict, file: str = 'courses.json'):
 
 
 def main(courses: list):
-    # courses = parse_courses_txt()
-    # courses = get_courses()
-    # f = open('courses.json', 'r', encoding='utf-8')
-    # courses = json.load(f)
     courses_statistics = analysis_courses(courses)
-    courses_statistics_no_elective = analysis_courses(
-        [course for course in courses if course['course_attr'] != '公选'],
-        False
-    )
-    print_courses_statistics(courses_statistics)
-    print_courses_statistics(courses_statistics_no_elective)
+    courses_statistics_no_elective = analysis_courses(courses, False)
+    sorted_key = sorted(courses_statistics.keys())
+
+    print('包括公共选修课的计算结果：')
+    print_courses_statistics(courses_statistics, sorted_key)
+    print()
+
+    print('不包括公共选修课的计算结果')
+    print_courses_statistics(courses_statistics_no_elective, sorted_key)
+
+    # 保存序列化的课程成绩信息
     save_courses(courses)
+
+    # 保存成绩统计结果
+    f = open('data.txt', 'w', encoding='utf-8')
+    save_courses_statistics(courses_statistics, sorted_key, f)
+    save_courses_statistics(courses_statistics_no_elective, sorted_key, f)
+    f.close()
+
 
 def msg():
     print('\033[1;41;0m！！！！！！！！！！！使用须知：\033[0m')
@@ -199,15 +244,16 @@ def msg():
     print('查询会花费一定时间，请不要提前关闭浏览器')
     print()
 
+
 if __name__ == '__main__':
     msg()
     account = input('请输入帐号（输入一行后按“Enter”确认）：')
     password = getpass('请输入密码（为了防止密码泄露，输入的密码是隐藏的，输完后按“Enter”确认即可）：')
-    system('clear')
 
     try:
         main(get_courses(account, password))
     except:
         print('获取网页信息异常！可能是账密有误，或者网络连接异常，请稍后再试。')
 
-    input()
+    print('你也可以通过生成在当前目录下的“data.txt”查看计算结果')
+    input('按“Enter”关闭窗口：')

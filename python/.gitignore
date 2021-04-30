@@ -1,1 +1,7 @@
 a.py
+courses.json
+
+# 打包文件或中间文件
+*.spec
+dist/
+build/
