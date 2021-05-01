@@ -1,12 +1,15 @@
 from io import TextIOWrapper
 from course import *
+import traceback
+from datetime import datetime
 from getpass import getpass
 import json
 from time import sleep
-from selenium.webdriver import Edge
+from threading import Thread
+# from selenium.webdriver import Edge
 
 # 可选的浏览器驱动
-# from selenium.webdriver import Chrome
+from selenium.webdriver import Chrome
 
 flag = False
 
@@ -24,8 +27,8 @@ def get_courses(account: str, password: str):
     获取一个到达课程成绩信息位置的 driver
     """
     # 根据本地安装的浏览器选择驱动
-    driver = Edge(executable_path='./drivers/msedgedriver.exe')
-    # driver = Chrome()
+    # driver = Edge(executable_path='./drivers/msedgedriver.exe')
+    driver = Chrome()
 
 
     # 使用 driver 访问网址并登录
@@ -63,16 +66,52 @@ def get_courses(account: str, password: str):
 
     # 提取课程成绩信息
     print('请稍等片刻，爬取信息需要时间')
-    courses = []
-    for row in range(2, div_size):
-        course = new_course(
+
+    def get_course(row: int):
+        """ 
+        爬取指定行的课程信息
+        :return: <list> 一门课程得到信息
+        """
+        return new_course(
             [get_item(row, col) for col in range(1, 18)]
         )
+
+    courses = []
+
+    def update_courses(row: int):
+        """ 
+        作为线程类 Thread 的目标执行更新课程信息的任务
+        """
+        # print(f'开始爬取第 {row - 1} 门课程信息')
+        course = get_course(row)
         if course['grade'] == 0:
             global flag
             flag = True
-            continue
+            return
+
+        # TODO: 为 courses 加锁
         courses.append(course)
+        # print(f'第 {row - 1} 门课程爬取已完成')
+
+    threads = []
+    print(f'Begin time:{datetime.now()}')
+    for row in range(2, div_size):
+        # course = new_course(
+        #     [get_item(row, col) for col in range(1, 18)]
+        # )
+        # if course['grade'] == 0:
+        #     global flag
+        #     flag = True
+        #     continue
+        # courses.append(course)
+        thread = Thread(target=update_courses, args=(row,))
+        thread.start()
+        threads.append(thread)
+
+    for thread in threads:
+        thread.join()
+
+    print(f'End time:{datetime.now()}')
 
     # 使用 Edge时，退出会产生编码错误，尚不清楚原因
     try:
@@ -264,6 +303,8 @@ if __name__ == '__main__':
         main(get_courses(account, password))
     except:
         print('获取网页信息异常！可能是账密有误，或者网络连接异常，请稍后再试。')
+        traceback.print_exc()
+    
 
     if flag:
         print('已去除挂科课程')
