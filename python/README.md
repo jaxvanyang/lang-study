@@ -1,12 +1,15 @@
 ## Structure
-- [algorithm](algorithm)  
+- [algorithm/](./algorithm)  
     My algotithm package  
 
-- [crawler](crawler)  
+- [crawler/](./crawler)  
     Some crawler  
 
-- [file](file)  
+- [file/](./file)  
     File operation package  
+
+- [src/](./src)  
+    New folder for storing python source codes  
 
 ## 日志
 - 2020/12/28 将 `/python/file/` 设置为包  
