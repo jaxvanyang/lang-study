@@ -1,12 +1,8 @@
 /* default */
+
 * {
     padding: 0;
     margin: 0
-}
-
-table {
-    width: 100%;
-    margin: 0 auto;
 }
 
 td {
@@ -26,7 +22,6 @@ body {
     margin: 0;
     color: #000
 }
-
 
 li, ul {
     list-style: none
@@ -67,8 +62,6 @@ img {
     margin: 10px auto;
     width: 1200px
 }
-
-/*头部*/
 
 .top_bg {
     border-bottom: 1px solid #ccc;
@@ -137,14 +130,10 @@ a.white:hover {
     text-decoration: none
 }
 
-/*下接菜单*/
-
 .xl {
     display: inline-block;
     position: relative
 }
-
-/*修改width：120px->130px */
 
 .droparrow {
     position: relative;
@@ -155,9 +144,6 @@ a.white:hover {
     padding-left: 5px;
     z-index: 1000
 }
-
-/*去购物车的掉hover效果*
-/*.droparrow:hover{background:#fff;width:120px;height:30px;display:inline-block;border:1px solid #ccc;border-bottom:none;padding-left:5px;cursor:pointer}*/
 
 .xl>.dropdown {
     background: #fff;
@@ -173,10 +159,6 @@ a.white:hover {
     overflow-x: hidden;
     display: none
 }
-
-/*去购物车的掉hover效果*/
-
-/*.xl:hover>.dropdown{display:block}*/
 
 .shop_pic li {
     float: left;
@@ -204,8 +186,6 @@ a.white:hover {
     display: inline-block;
     margin: 5px 5px 0 0
 }
-
-/*左侧导航*/
 
 .right_arrow {
     background: url(../images/arrow_r.jpg) no-repeat;
@@ -251,8 +231,6 @@ a.white:hover {
     display: inline-block;
     margin-left: 10px
 }
-
-/*中间部分*/
 
 .middle {
     float: left;
@@ -325,8 +303,6 @@ a.white:hover {
     margin: 5px 4px
 }
 
-/*右侧公告*/
-
 .right_nav {
     width: 280px;
     border: 1px solid #eee;
@@ -340,8 +316,6 @@ a.white:hover {
     text-indent: 20px;
     text-align: left
 }
-
-/*foot*/
 
 .footer {
     width: 100%;
@@ -444,7 +418,6 @@ a.white:hover {
     right: 0
 }
 
-/* 轮播图 */
 .focusBox {
     position: absolute;
     top: 490px;
