@@ -25,6 +25,7 @@ void parse_input(ll &num, const int argc, const char* argv[]) {
 }
 
 string itob(ull num) {
+	if (num == 0) return "0";
 	string ret;
 	while (num) {
 		if (num & 1) ret.insert(0, "1");
