@@ -20,7 +20,7 @@ int main(const int argc, const char** args) {
 		}
 		res = quick(p, c);
 	} else if (endwith(arg0, "sum.out")) {
-		if (p == 0) {
+		if (p < 2) {
 			cout << "input invalid" << endl;
 			return 1;
 		}
