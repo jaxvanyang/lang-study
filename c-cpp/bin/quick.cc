@@ -1,18 +1,20 @@
+// quick power & calculate sum of geometric progression
+
 #include <iostream>
 using namespace std;
 using ll = long long;
 
-void parse_input(ll &p, ll &c, const int argc, const char** args);
+void parse_input(ll &p, ll &c, const int argc, const char* argv[]);
 bool endwith(const string s, const string t);
 ll quick(ll p, ll c);
 ll sum(ll p, ll c);
 
-int main(const int argc, const char** args) {
+int main(const int argc, const char* argv[]) {
 	ll p = 1, c = 1;
-	parse_input(p, c, argc, args);
+	parse_input(p, c, argc, argv);
 	ll res;
 
-	string arg0 = args[0];
+	string arg0 = argv[0];
 	if (endwith(arg0, "quick.out")) {
 		if (p == 0 && c == 0) {
 			cout << "input invalid" << endl;
@@ -36,10 +38,10 @@ bool endwith(const string s, const string t) {
 	return s.rfind(t) == s.size() - t.size();
 }
 
-void parse_input(ll &p, ll &c, const int argc, const char** args) {
+void parse_input(ll &p, ll &c, const int argc, const char* argv[]) {
 	if (argc == 3) {
-		p = stoll(args[1]);
-		c = stoll(args[2]);
+		p = stoll(argv[1]);
+		c = stoll(argv[2]);
 	} else {
 		cin >> p >> c;
 	}
