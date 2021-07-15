@@ -1,5 +1,8 @@
 .PHONY : clean
 
+random.out : random.cc
+	g++ random.cc -o random.out -Wall
+
 quick.out : quick.cc
 	g++ quick.cc -o quick.out -Wall
 
