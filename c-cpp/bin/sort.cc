@@ -18,7 +18,7 @@ int main(const int argc, const char* argv[]) {
 	
 	parse_input(arr, argc, argv);
 
-	if (argv[1][0] != '-' || argv[1][1] <= '9') {
+	if (argc == 1 || argv[1][0] != '-' || argv[1][1] <= '9') {
 		quick_sort(arr);
 	} else if (argv[1][0] == '-') {
 		switch (argv[1][1]) {
@@ -34,11 +34,8 @@ int main(const int argc, const char* argv[]) {
 		}
 	}
 
-	if (check(arr)) {
-		print(arr);
-	} else {
-		return 2;
-	}
+	print(arr);
+	if (!check(arr)) return 2;
 }
 
 void parse_input(vector<double> &arr, const int argc, const char* argv[]) {
@@ -80,7 +77,7 @@ bool check(vector<double> &arr) {
 	for (size_t i = 1; i < arr.size(); ++i) {
 		if (arr[i] < arr[i - 1]) {
 			cout << "arr is not sorted!" << endl;
-			printf("arr[%ld] > arr[%ld]\n", i - 1, i);
+			printf("arr[%ld] = %lf > arr[%ld] = %lf\n", i - 1, arr[i - 1], i, arr[i]);
 			return false;
 		}
 	}
@@ -101,15 +98,14 @@ void merge_sort(vector<double> &arr, vector<double> &cpy, int l, int r) {
 	merge_sort(arr, cpy, mid + 1, r);
 
 	int i = l, j = mid + 1;
-	int p = l;
-	while (i <= mid && j <= r) {
-		if (arr[i] < arr[j]) cpy[p++] = arr[i++];
-		else cpy[p++] = arr[j++];
+	for (int k = l; k <= r; ++k) {
+		if (j > r || (i <= mid && arr[i] <= arr[j])) {
+			cpy[k] = arr[i++];
+		} else {
+			cpy[k] = arr[j++];
+		}
 	}
-	while (i <= mid) cpy[p++] = arr[i++];
-	while (j <= r) cpy[p++] = arr[j++];
-
-	for (int i = l; i <= r; ++i) arr[i] = cpy[i];
+	for (int k = l; k <= r; ++k) arr[k] = cpy[k];
 }
 
 void merge_sort(vector<double> &arr) {
