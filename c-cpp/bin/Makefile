@@ -15,5 +15,14 @@ diff.out : prefix.out
 complement.out : complement.cc
 	g++ complement.cc -o complement.out -Wall
 
+round.out : round.cc
+	g++ round.cc -o round.out -Wall
+
+discrete.out : discrete.cc
+	g++ discrete.cc -o discrete.out -Wall
+
+sort.out : sort.cc
+	g++ sort.cc -o sort.out -Wall
+
 clean :
 	rm *.out
