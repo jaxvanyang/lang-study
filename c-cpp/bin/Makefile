@@ -1,13 +1,16 @@
 .PHONY : clean
 
+log2.out : log2.cc
+	g++ log2.cc -o log2.out -Wall
+
 random.out : random.cc
 	g++ random.cc -o random.out -Wall
 
-quick.out : quick.cc
-	g++ quick.cc -o quick.out -Wall
+power.out : power.cc
+	g++ power.cc -o power.out -Wall
 
-sum.out : quick.out
-	ln -s `pwd`/quick.out sum.out
+sum.out : power.out
+	ln -s `pwd`/power.out sum.out
 
 prefix.out : prefix.cc
 	g++ prefix.cc -o prefix.out -Wall
