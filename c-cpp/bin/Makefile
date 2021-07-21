@@ -1,5 +1,8 @@
 .PHONY : clean
 
+calc.out : calc.cc
+	g++ calc.cc -o calc.out -Wall
+
 log2.out : log2.cc
 	g++ log2.cc -o log2.out -Wall
 
