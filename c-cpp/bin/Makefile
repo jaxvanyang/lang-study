@@ -1,5 +1,8 @@
 .PHONY : clean
 
+min_repr.out : min_repr.cc
+	g++ min_repr.cc -o min_repr.out -Wall
+
 match.out : match.cc
 	g++ match.cc -o match.out -Wall
 
