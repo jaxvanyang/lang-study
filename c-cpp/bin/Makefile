@@ -1,5 +1,8 @@
 .PHONY : clean
 
+match.out : match.cc
+	g++ match.cc -o match.out -Wall
+
 calc.out : calc.cc
 	g++ calc.cc -o calc.out -Wall
 
