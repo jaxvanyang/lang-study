@@ -11,6 +11,9 @@
 - [src/](./src)  
     New folder for storing python source codes  
 
+- [manim/](./manim)
+	Used manim to make some animation
+
 ## 日志
 - 2020/12/28 将 `/python/file/` 设置为包  
     但是 `VS Code` 无法识别  
