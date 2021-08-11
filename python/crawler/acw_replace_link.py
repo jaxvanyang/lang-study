@@ -1,9 +1,67 @@
+# To add a new cell, type '# %%'
+# To add a new markdown cell, type '# %% [markdown]'
+# %%
 from bs4 import BeautifulSoup as BS
 import requests
 from time import sleep
+import time
+from getpass import getpass
 
+
+# %%
 domain = "https://www.acwing.com"
-url = 'https://www.acwing.com/activity/content/punch_the_clock/6/'
+
+# get this from input
+activity_url = input('请输入要替换原题链接的 AcWing 活动页面（输入为空则默认为算法竞赛进阶指南》活动）：')
+if activity_url == '':
+    activity_url = 'https://www.acwing.com/activity/content/punch_the_clock/6/'
+
+
+# %%
+login_url = 'https://www.acwing.com/user/account/signin/'
+
+# access the main page to get csrftoken
+session = requests.Session()
+session.get(domain)
+csrftoken = session.cookies['csrftoken']
+
+# get login username & password
+print('请输入 AcWing 的登录信息，输入密码不显示是正常的')
+username = input('用户名或邮箱：')
+password = getpass('密码（输完后按回车）：')
+
+# set login form
+login_headers = {
+    'Connection': 'keep-alive',
+    'sec-ch-ua': '"Microsoft Edge";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
+    'DNT': '1',
+    'sec-ch-ua-mobile': '?0',
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.25 Safari/537.36 Edg/93.0.961.18',
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    'Accept': 'application/json, text/javascript, */*; q=0.01',
+    'X-Requested-With': 'XMLHttpRequest',
+    'X-CSRFToken': 'r2si6L74DMG5QfYhs2lqYsW7TlIVIPCJsj8mTXXUAcNpVUkILw5Hwferk9lpL5Ly',
+    'sec-ch-ua-platform': '"Linux"',
+    'Origin': 'https://www.acwing.com',
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Dest': 'empty',
+    'Referer': domain,
+    'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+}
+login_data = {
+  'csrfmiddlewaretoken': csrftoken,
+  'username': username,
+  'password': password,
+  'remember_me': 'on'
+}
+
+# login in ACWing
+session.post(login_url, headers=login_headers, data=login_data)
+
+
+# %%
+# normal page form data
 headers = {
     'Connection': 'keep-alive',
     'sec-ch-ua': '"Chromium";v="92", " Not A;Brand";v="99", "Microsoft Edge";v="92"',
@@ -16,35 +74,49 @@ headers = {
     'Sec-Fetch-Mode': 'navigate',
     'Sec-Fetch-User': '?1',
     'Sec-Fetch-Dest': 'document',
-    'Referer': 'https://www.acwing.com/activity/content/punch_the_clock/6/',
+    'Referer': activity_url,
     'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
-    'Cookie': 'file_2875_readed=""; file_4838_readed=""; csrftoken=EfzcZAwbFzJHjk2ryKSlARMHBW94cT0Q4zmCAj8VZdCfp2hvJMRuyvGMgZ5sPmrN; sessionid=kn3dcvobf1pomjvdo3rpor9sfhkxkme9; file_538183_readed=""; file_777_readed=""'}
+}
+
+response = session.get(activity_url, headers=headers)
+activity_page = session.get(activity_url, headers=headers).text
 
 
-session = requests.Session()
-main_page = session.get(url, headers=headers)
-source = main_page.text
-soup = BS(source, 'lxml')
+# %%
+activity_soup = BS(activity_page, 'lxml')
 
-problems = soup.find_all('a', class_='clock-problem-title')
-print(len(problems))
+problems = activity_soup.find_all('a', class_='clock-problem-title')
+cnt = len(problems)
+print(f'total problem count: {cnt}')
+print(f'it may finish in {cnt // 120} mins')
 
-i = 1
-for each in problems:
-    print(f'#{i}: {each.span.text}')
-    # print('https://www.acwing.com' + each.attrs['href'])
-    href = each.attrs['href']
-    page = requests.get(f'{domain}{href}', headers=headers)
-    each_soup = BS(page.text, 'lxml')
-    target = each_soup.find('a', class_='label label-info')
-    # print(target)
+
+# %%
+start_time = time.time()
+
+for i in range(cnt):
+    problem = problems[i]
+    print(f'# {i + 1}/{cnt}: {problem.span.text}')
+
+    href = problem.attrs['href']
+    page = session.get(f'{domain}{href}', headers=headers)
+
+    problem_soup = BS(page.text, 'lxml')
+    target = problem_soup.find('a', class_='label label-info')
+    
     original_link = target.attrs['href']
-    print(f'will replace {each.attrs["href"]} with {original_link}')
-    # print(source.find(each.attrs['href']))
-    source = source.replace(each.attrs['href'], original_link)
-    i += 1
-    sleep(1)
+    print(f'will replace {problem.attrs["href"]} with {original_link}')
 
+    activity_page = activity_page.replace(problem.attrs['href'], original_link)
+
+    # optional
+    # sleep(1)
+
+end_time = time.time()
+print(f'scrape time: {end_time - start_time} s')
 
 with open('source.html', 'w') as f:
-    f.write(source)
+    f.write(activity_page)
+    print('successed, check source.html in current folder')
+
+
