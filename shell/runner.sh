@@ -38,13 +38,14 @@ if [ -e $out_file ]; then
     source_time=$(stat -c %Y  $full_name);
     out_time=$(stat -c %Y $out_file);
     if [ $source_time -lt $out_time ]; then
+		echo "Log: reuse compiled file\n"
         run $out_file $lang
         exit 0
     fi
 fi
 
 if [ $lang = "cpp" ]; then
-	g++ $full_name -Wall -O2 -o $out_file && run $out_file $lang;
+	g++ $full_name -Wall -O2 -o $out_file && echo "Log: Compile complete\n" && run $out_file $lang
 elif [ $lang = "kt" ]; then
-	kotlinc $full_name -include-runtime -d $out_file && run $out_file $lang;
+	kotlinc $full_name -include-runtime -d $out_file && echo "Log: Compile complete\n" && run $out_file $lang
 fi
