@@ -1,15 +1,149 @@
+# 使用须知：
+
+# 本脚本使用 Chrome 的测试驱动与 Chrome 进行交互以模拟手动访问教务平台
+
+# 所以需要安装 Chrome 和 Chrome 的测试驱动：https://sites.google.com/chromium.org/driver/home
+# 还需要将驱动的可执行文件加入环境变量 PATH
+
+# 由于本脚本使用 selenium 控制 Chrome，所以也需要使用 pip 安装依赖包 selenium
+
+# 如果你使用的是其他浏览器也可以安装相应的驱动，再更改本代码文件的第 25 和 165 行指定的浏览器即可
+
+# 脚本会自动打开浏览器查询，完成后会自动关闭
+# 计算过程也会花费一点时间，请耐心等待
+
+
 from io import TextIOWrapper
-from course import *
-import traceback
+# import traceback
 from datetime import datetime
 from getpass import getpass
 import json
 from time import sleep
 from threading import Thread
+
+# 非标准库依赖包
+from selenium.webdriver import Chrome
+# 可选的浏览器驱动
 # from selenium.webdriver import Edge
 
-# 可选的浏览器驱动
-from selenium.webdriver import Chrome
+translation = {
+    'no': '序号',
+    'term': '开课学期',
+    'id': '课程编号',
+    'name': '课程名称',
+    'group_name': '分组名',
+    'score': '成绩',
+    'study_type': '修读方式',
+    'score_id': '成绩标识',
+    'credit': '学分',
+    'total_study_hour': '总学时',
+    'grade': '绩点',
+    'restudy_term': '补重学期',
+    'exam_type': '考核方式',
+    'exam_property': '考试性质',
+    'course_attr': '课程属性',
+    'course_property': '课程性质',
+    'course_type': '课程类别',
+    'course_amount': '所修门数',
+    'total_credits': '所修总学分',
+    'gpa': '平均学分绩点',
+    'score_average': '平均成绩',
+    'contains_elective': '是否包括公选课',
+}
+
+col_to_key = (
+    'no',
+    'term',
+    'id',
+    'name',
+    'group_name',
+    'score',
+    'study_type',
+    'score_id',
+    'credit',
+    'total_study_hour',
+    'grade',
+    'restudy_term',
+    'exam_type',
+    'exam_property',
+    'course_attr',
+    'course_property',
+    'course_type',
+)
+
+
+def new_course(
+        term: str,
+        name: str,
+        credit: float,
+        course_attr: str,   # 公选是不用计算的选修课
+        course_property: str,
+        grade: float,
+        no: int = None,
+        id: str = None,
+        score: float = None,
+        group_name: str = None,
+        study_type: str = None,
+        score_id: str = None,
+        total_class_hour: int = None,
+        restudy_term: str = None,
+        exam_type: str = None,
+        exam_property: str = None,
+        course_type: str = None):
+    """ 
+    创建一个表示课程信息的字典
+    """
+    return {
+        'no': no,
+        'term': term,
+        'id': id,
+        'name': name,
+        'group_name': group_name,
+        'score': score,
+        'study_type': study_type,
+        'score_id': score_id,
+        'credit': credit,
+        'total_study_hour': total_class_hour,
+        'grade': grade,
+        'restudy_term': restudy_term,
+        'exam_type': exam_type,
+        'exam_property': exam_property,
+        'course_attr': course_attr,
+        'course_property': course_property,
+        'course_type': course_type,
+    }
+
+def new_course(li: list):
+    """ 
+    创建一个表示课程信息的字典
+    """
+    return {
+        'no': int(li[0]),
+        'term': li[1],
+        'id': li[2],
+        'name': li[3],
+        'group_name': li[4],
+        'score': float(li[5]),
+        'study_type': li[6],
+        'score_id': li[7],
+        'credit': float(li[8]),
+        'total_study_hour': int(li[9]),
+        'grade': float(li[10]),
+        'restudy_term': li[11],
+        'exam_type': li[12],
+        'exam_property': li[13],
+        'course_attr': li[14],
+        'course_property': li[15],
+        'course_type': li[16],
+    }
+
+
+def translate_course(course: dict):
+    ret = {}
+    for key in course.keys():
+        ret[translation[key]] = course[key]
+    return ret
+
 
 flag = False
 
@@ -26,7 +160,7 @@ def get_courses(account: str, password: str):
     """ 
     获取一个到达课程成绩信息位置的 driver
     """
-    # 根据本地安装的浏览器选择驱动
+    # 指定可执行文件的路径就不用假如环境变量 PATH 了
     # driver = Edge(executable_path='./drivers/msedgedriver.exe')
     driver = Chrome()
 
@@ -36,20 +170,20 @@ def get_courses(account: str, password: str):
     driver.find_element_by_id('userAccount').send_keys(account)
     driver.find_element_by_id('userPassword').send_keys(password)
     driver.find_element_by_xpath('//*[@id="ul1"]/li[5]/button').click()
-    sleep(1)
+    sleep(3)
 
     # 切换到课程成绩信息页面
     driver.switch_to.frame('Frame0')
     driver.find_element_by_xpath(
         '/html/body/div[2]/div[2]/div[1]/div[2]/div/div/div[2]').click()
-    sleep(1)
+    sleep(3)
 
     # 查询课程成绩
     driver.switch_to.default_content()
     driver.switch_to.frame('Frame1')
     driver.switch_to.frame('cjcx_query_frm')
     driver.find_element_by_xpath('//*[@id="btn_query"]').click()
-    sleep(1)
+    sleep(3)
 
     # 导航到数据页面
     driver.switch_to.parent_frame()
@@ -282,14 +416,22 @@ def main(courses: list):
 
 
 def msg():
-    print('\033[1;41;0m！！！！！！！！！！！使用须知：\033[0m')
-    print()
-    print('使用前请确认安装了最新版本的 Edge')
-    print('不清楚自己 Edge 浏览器版本号的同学可以在 Edge 地址栏输入以下地址查看：\nedge://settings/help')
-    print()
-    print('脚本会自动打开浏览器查询，完成后自动关闭浏览器')
-    print('查询会花费一定时间，请不要提前关闭浏览器')
-    print()
+    print(
+        """
+        使用须知：
+
+        本脚本使用 Chrome 的测试驱动与 Chrome 进行交互以模拟手动访问教务平台
+
+        所以需要安装 Chrome 和 Chrome 的测试驱动：https://sites.google.com/chromium.org/driver/home
+        还需要将驱动的可执行文件加入环境变量 PATH
+        
+        由于本脚本使用 selenium 控制 Chrome，所以也需要使用 pip 安装依赖包 selenium
+
+        如果你使用的是其他浏览器也可以安装相应的驱动，再更改本代码文件的第 25 和 165 行指定的浏览器即可
+
+        脚本会自动打开浏览器查询，完成后会自动关闭
+        计算过程也会花费一点时间，请耐心等待
+        """)
 
 
 if __name__ == '__main__':
@@ -303,7 +445,8 @@ if __name__ == '__main__':
         main(get_courses(account, password))
     except:
         print('获取网页信息异常！可能是账密有误，或者网络连接异常，请稍后再试。')
-        traceback.print_exc()
+        # traceback.print_exc()
+        exit(1)
     
 
     if flag:
@@ -311,4 +454,5 @@ if __name__ == '__main__':
 
 
     print('你也可以通过生成在当前目录下的“data.txt”查看计算结果')
-    input('按“Enter”关闭窗口：')
+    print("计算的 GPA 分为两部分，第一部分是包括公共选修课的计算结果，第二部分是去除公选课的计算结果，可以通过所修門数验证")
+    print("一般来说综测是按照去除公选课的成绩计算")
