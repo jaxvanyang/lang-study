@@ -11,13 +11,12 @@
 # 5. Python
 
 if [ $# -lt 1 ]; then
-	echo "Please name a file\
-		Usage: runner.sh <source_file>"
+	echo -e "\033[0;31mPlease name a file\n\nUsage: runner.sh <source_file>"
 	exit 3
 fi
 
 if [ ! -e $1 ]; then
-    echo "Error: file not exist!"
+    echo -e "\033[0;31mError: file not exists!"
     exit 2
 fi
 
@@ -32,19 +31,19 @@ run_out() {
 	elif [ $2 = "py" ]; then
 		python $1;
 	else
-		echo "Error: Unknown file type"
+		echo -e "\033[0;31mError: Unknown file type"
 		exit 1
 	fi
 
 	if [ $? != 0 ]; then
-		echo "Error: Execution failed!"
+		echo -e "\033[0;31mError: Execution failed!"
 		exit 2
 	fi
 }
 
 # run($1=out_file, $2=lang)
 run() {
-	echo "Log: Start running"
+	echo -e "\033[0;32mLog: Start running\033[0;37m"
 
 	start_time=$(date +%s%N)
 
@@ -56,7 +55,7 @@ run() {
 
 	end_time=$(date +%s%N)
 
-	echo "Log: Execution time: $(( (end_time - start_time) / 1000000))ms"
+	echo -e "\033[0;32mLog: Execution time: $(( (end_time - start_time) / 1000000))ms"
 }
 
 # examples are after statements
@@ -82,7 +81,7 @@ elif [ $extension = "py" ]; then
 	lang="py"
 	out_file=$path	# Python has no out file
 elif [[ ! "cc|cpp" =~ $extension ]]; then
-	echo "Error: Unknow file type!"
+	echo -e "\033[0;31mError: Unknow file type!"
 	exit 1
 fi
 
@@ -95,14 +94,10 @@ if [ -e $out_file ]; then
     out_time=$(stat -c %Y $out_file);
 
     if [ $source_time -lt $out_time ]; then
-		echo "Log: Reuse compiled file & Start running"
+		echo -e "\033[0;32mLog: Reuse compiled file & Start running"
         run $out_file $lang
         exit 0
     fi
-fi
-
-if [[ ! "py|java" =~ $lang ]]; then
-	echo -e "Log: Start compiling\n"
 fi
 
 # compile($1=path, $2=out_file, $3=lang)
@@ -133,7 +128,11 @@ compile() {
 
 	end_time=$(date +%s%N)
 
-	echo -e "Log: Compilation time: $(( (end_time - start_time) / 1000000 ))ms\n"
+	echo -e "\033[0;32mLog: Compilation time: $(( (end_time - start_time) / 1000000 ))ms\n"
 }
+
+if [ $lang != "java" ]; then
+	echo -e "\033[0;32mLog: Start compiling\n"
+fi
 
 compile $path $out_file $lang && run $out_file $lang
