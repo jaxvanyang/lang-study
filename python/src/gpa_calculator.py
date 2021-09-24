@@ -299,20 +299,21 @@ def calculate_gpa(courses: list, contains_elective: bool = True):
     total_grades = 0
     total_scores = 0
     course_amount = len(courses)
+    
     for course in courses:
         if (not contains_elective) and course['course_attr'] == '公选':
             course_amount -= 1
             continue
+
         total_credits += course['credit']
         total_grades += course['credit'] * course['grade']
+        total_scores += course['score'] * course['credit']
 
-        # 注意平均成绩不用加权学分计算
-        total_scores += course['score']
     return {
         'course_amount': course_amount,
         'total_credits': total_credits,
         'gpa': total_grades / total_credits,
-        'score_average': total_scores / course_amount,
+        'score_average': total_scores / total_credits,
         # 'contains_elective': contains_elective,
     }
 
