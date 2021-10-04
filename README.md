@@ -1,34 +1,27 @@
-# lang-study
+# Lang Study
 
-A repository used to study several language
+A repository used to study several languages.
+
+## TOC
+
+- [TODOs](#todos)
+
+- [Log](#log)
+
+- [Reference](#reference)
 
 ## TODOs
 
-- [ ] 完善 README.md  
+- [ ] 完善 README.md
+
 - [ ] 完善系统配置备份的脚本
 
-## Repository Structure
+## Log
 
-- [C\C++](c-cpp)  
+- find 命令的 name 参数必须用引号包围
 
-- [Java](java)  
+## Reference
 
-- [JavaScript](javascript)  
+- [Node Version Manager](https://github.com/nvm-sh/nvm)
 
-- [Kotlin](kotlin)  
-
-- [Powershell](powershell)  
-
-- [Python](python)  
-
-## Branches
-
-- main  
-
-- gpa  
-
-    用来维护专用于 Windows 的 **长沙理工大学 GPA 自动计算器**，详细介绍：[长沙理工大学 GPA 自动计算爬虫](https://jaxvanyang.github.io/2021/05/05/gpa-calculator.html)。 
-
-## 日志
-
-- find 命令的 name 参数必须用引号包围  
+- [How To Use ES6 Modules With Node.js](https://blog.webdevsimplified.com/2019-09/es6-modules-in-nodejs/#:~:text=The%20first%20way%20to%20use%20ES6%20module%20syntax,setup%20with%20just%20a%20few%20lines%20of%20code.)

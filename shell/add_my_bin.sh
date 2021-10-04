@@ -1,9 +1,9 @@
 #!/bin/bash
 
-MY_BIN=${MY_BIN:-~/.local/share/bin}
+MY_BIN=${MY_BIN:-~/.local/bin}
 prefix_path=''
 
-if ([ $# = 1 ] || [ $# = 2 ]) && [[ ! $1 =~ ^/.*$ ]]; then
+if [[ ($# = 1 || $# = 2) && ! $1 =~ ^/.*$ ]]; then
 	prefix_path=$PWD
 fi
 
