@@ -10,40 +10,63 @@
 # 4. Kotlin
 # 5. Python
 
+to_red() {
+	echo -en '\033[0;31m'
+}
+
+to_green() {
+	echo -en '\033[0;32m'
+}
+
+reset_color() {
+	echo -en '\033[0m'
+}
+
+help_msg() {
+	echo -e 'Please name a file\n\nUsage: runner.sh <source_file>'
+}
+
+
 if [ $# -lt 1 ]; then
-	echo -e "\033[0;31mPlease name a file\n\nUsage: runner.sh <source_file>"
+	to_red
+	help_msg
 	exit 3
 fi
 
 if [ ! -e $1 ]; then
-    echo -e "\033[0;31mError: file not exists!"
+	to_red
+    echo 'Error: file not exists!'
     exit 2
 fi
 
 # run_out($1=out_file, $2=lang)
 run_out() {
-	if [[ "c|cpp" =~ $2 ]]; then
+	if [[ $2 =~ ^c$|^cpp$ ]]; then
 		$1
-	elif [ $2 = "java" ]; then
+	elif [ $2 = 'java' ]; then
 		java ${1%.*}
-	elif [ $2 = "kt" ]; then
+	elif [ $2 = 'kt' ]; then
 		java -jar $1;
-	elif [ $2 = "py" ]; then
+	elif [ $2 = 'py' ]; then
 		python $1;
 	else
-		echo -e "\033[0;31mError: Unknown file type"
+		to_red
+		echo 'Error: Unknown file type!'
 		exit 1
 	fi
 
 	if [ $? != 0 ]; then
-		echo -e "\033[0;31mError: Execution failed!"
+		to_red
+		echo 'Error: Execution failed!'
 		exit 2
 	fi
 }
 
 # run($1=out_file, $2=lang)
 run() {
-	echo -e "\033[0;32mLog: Start running\033[0;37m"
+	to_green
+	echo 'Log: Start running'
+	reset_color
 
 	start_time=$(date +%s%N)
 
@@ -55,7 +78,8 @@ run() {
 
 	end_time=$(date +%s%N)
 
-	echo -e "\033[0;32mLog: Execution time: $(( (end_time - start_time) / 1000000))ms"
+	to_green
+	echo -e "Log: Execution time: $(( (end_time - start_time) / 1000000))ms"
 }
 
 # examples are after statements
@@ -66,27 +90,28 @@ extension=${path##*.};	# cc
 out_file=$file_name.out;	# test.out
 
 # use normal extension as language type
-lang="cpp";
+lang='cpp';
 
-if [ $extension = "c" ]; then
-	lang="c"
+if [[ $extension == c ]]; then
+	lang='c'
 	out_file=$file_name.exe	# be different to C++ out file
-elif [ $extension = "java" ]; then
-	lang="java"
+elif [ $extension = 'java' ]; then
+	lang='java'
 	out_file=$file_name.class
-elif [ $extension = "kt" ]; then
-	lang="kt"
+elif [ $extension = 'kt' ]; then
+	lang='kt'
 	out_file=$file_name.jar
-elif [ $extension = "py" ]; then
-	lang="py"
+elif [ $extension = 'py' ]; then
+	lang='py'
 	out_file=$path	# Python has no out file
-elif [[ ! "cc|cpp" =~ $extension ]]; then
-	echo -e "\033[0;31mError: Unknow file type!"
+elif [[ ! $extension =~ ^cc$|^cpp$|^cx$ ]]; then
+	to_red
+	echo 'Error: Unknow file type!'
 	exit 1
 fi
 
-if [[ "c|cpp" =~ $extension ]] && [[ ! $out_file =~ "/*" ]]; then
-	out_file=./$out_file
+if [[ $lang =~ ^c$|^cpp$ && ! $out_file =~ ^/.*$ ]]; then
+   out_file=./$out_file
 fi
 
 if [ -e $out_file ]; then
@@ -94,7 +119,9 @@ if [ -e $out_file ]; then
     out_time=$(stat -c %Y $out_file);
 
     if [ $source_time -lt $out_time ]; then
-		echo -e "\033[0;32mLog: Reuse compiled file & Start running"
+		to_green
+		echo -e "Log: Reuse compiled file"
+
         run $out_file $lang
         exit 0
     fi
@@ -106,19 +133,22 @@ compile() {
 	out_file=$2
 	lang=$3
 
-	if [ $lang = "py" ]; then
+	if [ $lang = 'py' ]; then
 		return 0
 	fi
 
+	to_green
+	echo 'Log: Start compiling'
+
 	start_time=$(date +%s%N)
 
-	if [ $lang = "cpp" ]; then
+	if [ $lang = 'cpp' ]; then
 		g++ $path -Wall -O2 -o $out_file
-	elif [ $lang = "c" ]; then
+	elif [ $lang = 'c' ]; then
 		gcc $path -Wall -O2 -o $out_file
-	elif [ $lang = "java" ]; then
+	elif [ $lang = 'java' ]; then
 		javac $path
-	elif [ $lang = "kt" ]; then
+	elif [ $lang = 'kt' ]; then
 		kotlinc $path -include-runtime -d $out_file
 	fi
 
@@ -128,11 +158,8 @@ compile() {
 
 	end_time=$(date +%s%N)
 
-	echo -e "\033[0;32mLog: Compilation time: $(( (end_time - start_time) / 1000000 ))ms\n"
+	to_green
+	echo "Log: Compilation time: $(( (end_time - start_time) / 1000000 ))ms"
 }
-
-if [ $lang != "java" ]; then
-	echo -e "\033[0;32mLog: Start compiling\n"
-fi
 
 compile $path $out_file $lang && run $out_file $lang
