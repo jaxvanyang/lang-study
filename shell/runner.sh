@@ -70,8 +70,8 @@ run() {
 
 	start_time=$(date +%s%N)
 
-    if [ -e data.in ]; then
-        run_out $1 $2 < data.in
+    if [ -e input.txt ]; then
+        run_out $1 $2 < input.txt
     else
         run_out $1 $2
     fi
