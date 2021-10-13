@@ -34,8 +34,8 @@ if (!(Test-Path $OutFile)) {
 	}
 }
 
-if (Test-Path "data.in") {
-	Get-Content data.in | & $OutFile
+if (Test-Path "input.txt") {
+	Get-Content input.txt | & .\$OutFile
 } else {
-	& $OutFile
+	& .\$OutFile
 }
