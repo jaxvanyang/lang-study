@@ -1,5 +1,3 @@
-# 201908130416 杨凯
-
 import random
 import time
 
