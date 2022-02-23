@@ -1,6 +1,6 @@
 # Lang Study
 
-A repository used to study several languages.
+A repository used to study several languages or technology books.
 
 ## TOC
 
