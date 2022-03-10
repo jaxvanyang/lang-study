@@ -13,4 +13,4 @@ show_bytes : show_bytes.c
 .PHONY : clean
 
 clean :
-	- rm *.out show_bytes is_little_endian mix_words replace_byte
+	- rm *.out *.o *.s show_bytes is_little_endian mix_words replace_byte
