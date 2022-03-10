@@ -10,5 +10,5 @@ int main() {
 	int y = 0x76543210;
 	int res = mix_words(x, y);
 
-	printf("%x", res);
+	printf("%x\n", res);
 }

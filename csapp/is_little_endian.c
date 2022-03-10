@@ -12,7 +12,7 @@ int is_little_endian() {
 
 int main() {
 	int res = is_little_endian();
-	printf("This is a %s endian machine", res ? "little" : "big");
+	printf("This is a %s endian machine\n", res ? "little" : "big");
 	
 	// 0 represent true in shell, so you need to reverse it to match shell style
 	return !res;
