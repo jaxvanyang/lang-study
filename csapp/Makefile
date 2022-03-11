@@ -1,3 +1,6 @@
+solution_2_61 : solution_2_61.c
+	gcc -o solution_2_61 solution_2_61.c
+
 replace_byte : replace_byte.c
 	gcc -o replace_byte replace_byte.c
 
@@ -13,5 +16,5 @@ show_bytes : show_bytes.c
 .PHONY : clean
 
 clean :
-	- rm *.out *.o *.s show_bytes is_little_endian mix_words replace_byte
-	- del *.out *.o *.s show_bytes is_little_endian mix_words replace_byte
+	- rm *.out *.o *.s show_bytes is_little_endian mix_words replace_byte solution_2_61
+	- del *.exe *.o *.s show_bytes is_little_endian mix_words replace_byte solution_2_61
