@@ -14,3 +14,4 @@ show_bytes : show_bytes.c
 
 clean :
 	- rm *.out *.o *.s show_bytes is_little_endian mix_words replace_byte
+	- del *.out *.o *.s show_bytes is_little_endian mix_words replace_byte
