@@ -1,3 +1,6 @@
+shift_right : shift_right.c
+	gcc -Wall -o shift_right shift_right.c
+
 int_shifts_are_arithmetic : int_shifts_are_arithmetic.c
 	gcc -Wall -o int_shifts_are_arithmetic int_shifts_are_arithmetic.c
 
@@ -20,6 +23,6 @@ show_bytes : show_bytes.c
 
 clean :
 	- rm *.out *.o *.s show_bytes is_little_endian mix_words \
-		replace_byte solution_2_61 int_shifts_are_arithmetic
+		replace_byte solution_2_61 int_shifts_are_arithmetic shift_right
 	- del *.exe *.o *.s show_bytes is_little_endian mix_words \
-		replace_byte solution_2_61 int_shifts_are_arithmetic
+		replace_byte solution_2_61 int_shifts_are_arithmetic shift_right
