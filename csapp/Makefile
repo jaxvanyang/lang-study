@@ -1,28 +1,25 @@
-shift_right : shift_right.c
-	gcc -Wall -o shift_right shift_right.c
+BUILD_DIR := ./build
+SRC_DIRS := ./
 
-int_shifts_are_arithmetic : int_shifts_are_arithmetic.c
-	gcc -Wall -o int_shifts_are_arithmetic int_shifts_are_arithmetic.c
+SRCS := $(shell find $(SRC_DIRS) -name '*.c')
+OBJS := $(SRCS:%.c=$(BUILD_DIR)/%.o)
+OUTS := $(SRCS:%.c=$(BUILD_DIR)/%)
 
-solution_2_61 : solution_2_61.c
-	gcc -Wall -o solution_2_61 solution_2_61.c
+CPPFLAGS := $(INC_FLAGS) -Wall -g
 
-replace_byte : replace_byte.c
-	gcc -Wall -o replace_byte replace_byte.c
+all: $(OUTS)
 
-mix_words : mix_words.c
-	gcc -Wall -o mix_words mix_words.c
+# run $(BUILD_DIR)/target
+%: $(BUILD_DIR)/%
+	$^
 
-is_little_endian : is_little_endian.c
-	gcc -Wall -o is_little_endian is_little_endian.c
+$(BUILD_DIR)/%: $(BUILD_DIR)/%.o
+	$(CC) $^ -o $@ $(LDFLAGS)
 
-show_bytes : show_bytes.c
-	gcc -Wall -o show_bytes show_bytes.c
+$(BUILD_DIR)/%.o: %.c
+	mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-.PHONY : clean
-
-clean :
-	- rm *.out *.o *.s show_bytes is_little_endian mix_words \
-		replace_byte solution_2_61 int_shifts_are_arithmetic shift_right
-	- del *.exe *.o *.s show_bytes is_little_endian mix_words \
-		replace_byte solution_2_61 int_shifts_are_arithmetic shift_right
+.PHONY: clean
+clean:
+	rm -r $(BUILD_DIR)
