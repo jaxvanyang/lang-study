@@ -7,20 +7,22 @@
  * otherwise return 0.
  */
 int foo(int x) {
+	// used to check all 1
   int x_ = ~x;
-  int shift_size = (sizeof(int) - 1) << 3;
 
+	// check if the lest significant byte is 0xFF
   int x_lsb = x & 0xFF;
-  int x_lsb_ = x ^ 0xFF;
+  int x_lsb_ = x_lsb ^ 0xFF;
 
   /**
    * use arithemetic shift to move the most significant byte to the right most,
    * and setting other bit to the most significant bit.
    */
+  int shift_size = (sizeof(int) - 1) << 3;
   int x_msb = x >> shift_size;
 
 
-  return !x_ || !x || !x_lsb || !x_msb;
+  return !x_ || !x || !x_lsb_ || !x_msb;
 }
 
 int main() {
