@@ -1,5 +1,5 @@
-BUILD_DIR := ./build
-SRC_DIRS := ./
+BUILD_DIR := build
+SRC_DIR := src
 
 SRCS := $(shell find $(SRC_DIRS) -name '*.c')
 OBJS := $(SRCS:%.c=$(BUILD_DIR)/%.o)
@@ -11,8 +11,8 @@ all: $(OUTS)
 
 # Run $(BUILD_DIR)/target
 # But you should run `make all` first for unknown reason
-%: $(BUILD_DIR)/%
-	$^
+%: $(BUILD_DIR)/$(SRC_DIR)/%
+	-$^
 
 $(BUILD_DIR)/%: $(BUILD_DIR)/%.o
 	$(CC) $^ -o $@ $(LDFLAGS)
