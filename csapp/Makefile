@@ -9,7 +9,8 @@ CPPFLAGS := $(INC_FLAGS) -Wall -g
 
 all: $(OUTS)
 
-# run $(BUILD_DIR)/target
+# Run $(BUILD_DIR)/target
+# But you should run `make all` first for unknown reason
 %: $(BUILD_DIR)/%
 	$^
 
