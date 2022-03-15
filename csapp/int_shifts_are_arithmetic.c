@@ -11,7 +11,7 @@ int main() {
   char yes_msg[] = "int shifts are arithmetic\n";
   char no_msg[] = "int shifts are logical\n";
   int result = int_shifts_are_arithmetic();
-  printf(result ? yes_msg : no_msg);
+  puts(result ? yes_msg : no_msg);
 
   return result;
 }

@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-// Perform a logical right shift using an arithemetic right shift.
+// Perform a logical right shift using an arithmetic right shift.
 unsigned srl(unsigned x, int k) {
   unsigned xsra = (int) x >> k;
   int shift_size = (sizeof(unsigned) << 3) - k;
@@ -8,7 +8,7 @@ unsigned srl(unsigned x, int k) {
   return xsra & mask;
 }
 
-// Perform an arithemetic right shift using a logical right shift.
+// Perform an arithmetic right shift using a logical right shift.
 unsigned sra(int x, int k) {
   int xsrl = (unsigned) x >> k;
 
@@ -33,6 +33,6 @@ int main() {
 
   int c = 0x01234567;
   int d = 0x89ABCDEF;
-  int is_arithemetic_ok = sra(c, k) == c >> k && sra(d, k) == d >> k;
-  printf("shift right airhemetically: %s\n", is_arithemetic_ok ? ok_msg : err_msg);
+  int is_arithmetic_ok = sra(c, k) == c >> k && sra(d, k) == d >> k;
+  printf("shift right airhemetically: %s\n", is_arithmetic_ok ? ok_msg : err_msg);
 }
