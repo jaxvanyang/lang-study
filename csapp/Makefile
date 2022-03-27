@@ -1,7 +1,7 @@
 BUILD_DIR := build
 SRC_DIR := src
 
-SRCS := $(shell find $(SRC_DIRS) -name '*.c')
+SRCS := $(shell find $(SRC_DIR) -name '*.c')
 OBJS := $(SRCS:%.c=$(BUILD_DIR)/%.o)
 OUTS := $(SRCS:%.c=$(BUILD_DIR)/%)
 
