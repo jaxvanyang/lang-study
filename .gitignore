@@ -2,7 +2,6 @@
 *\.out
 *\.o
 *\.tmp
-*\.txt
 *\.log
 *\.jar
 
@@ -12,3 +11,6 @@ a.*
 __pycache__/
 out/
 .vscode/
+
+# gdb history
+.gdb_history
