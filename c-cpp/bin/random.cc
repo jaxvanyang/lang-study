@@ -1,17 +1,21 @@
+/*
+ * Usage:
+ *		random.out [size] [lmt]
+ */
+
 #include <iostream>
 #include <vector>
 #include <cstdlib>
 #include <ctime>
-using namespace std;
 using ll = long long;
 
 int random(int lmt);
-void parse_input(vector<double> &arr, int &n, int &size, const int argc, const char* argv[]);
+void parse_input(std::vector<double> &arr, int &n, int &size, const int argc, const char* argv[]);
 
 int main(const int argc, const char* argv[]) {
 	srand((unsigned)time(0));
 
-	vector<double> arr;
+	std::vector<double> arr;
 	int size = 100;
 	int lmt = 1000;
 
@@ -20,17 +24,17 @@ int main(const int argc, const char* argv[]) {
 	for (int i = 0; i < size; ++i) arr.push_back(random(lmt));
 	
 	for (auto num : arr) {
-		cout << num << ' ';
+		std::cout << num << ' ';
 	}
-	cout << endl;
+	std::cout << std::endl;
 }
 
-void parse_input(vector<double> &arr, int &lmt, int &size, const int argc, const char* argv[]) {
+void parse_input(std::vector<double> &arr, int &lmt, int &size, const int argc, const char* argv[]) {
 	if (argc >= 2) {
-		size = stoi(argv[1]);
+		size = std::stoi(argv[1]);
 	}
 	if (argc == 3) {
-		lmt = stoi(argv[2]);
+		lmt = std::stoi(argv[2]);
 	}
 }
 

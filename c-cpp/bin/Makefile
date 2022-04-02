@@ -1,5 +1,8 @@
 .PHONY : clean
 
+prime.out : prime.cc
+	g++ prime.cc -o prime.out -Wall
+
 min_repr.out : min_repr.cc
 	g++ min_repr.cc -o min_repr.out -Wall
 
