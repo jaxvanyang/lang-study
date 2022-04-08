@@ -9,8 +9,8 @@ OUTS := $(SRCS:%.cc=$(BUILD_DIR)/%)
 CPPFLAGS := $(INC_FLAGS) -Wall -g
 
 all: $(OUTS)
-	mkdir $(BIN_DIR)
-	mv $^ $(BIN_DIR)
+	mkdir -p $(BIN_DIR)
+	cp $^ $(BIN_DIR)
 
 $(BUILD_DIR)/%: $(BUILD_DIR)/%.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
