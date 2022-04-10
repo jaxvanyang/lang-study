@@ -308,19 +308,8 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-	unsigned neg_x = ~x;
-	unsigned f_neg_x = (neg_x >> 1) | neg_x;
-	f_neg_x = (f_neg_x >> 2) | f_neg_x;
-	f_neg_x = (f_neg_x >> 4) | f_neg_x;
-	f_neg_x = (f_neg_x >> 8) | f_neg_x;
-	f_neg_x = (f_neg_x >> 16) | f_neg_x;
-
-	// 0 if x >= 0
-	unsigned zero_pos = ~f_neg_x;
-	unsigned ones_neg = !zero_pos + ~1 + 1;
-	unsigned ones_pos = ~ones_neg;
-
-	unsigned fill = (f_neg_x & ones_neg) | (ones_pos & x);
+    // fill = x < 0 ? ~x : x;
+    unsigned fill = x ^ (x >> 31);
 	fill = (fill >> 1) | fill;
 	fill = (fill >> 2) | fill;
 	fill = (fill >> 4) | fill;
