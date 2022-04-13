@@ -308,8 +308,15 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
+	// decalare variables first to pass dlc
+	int sum = 0;
+	int mask_16, a_16, b_16;
+	int mask_8, a_8, b_8;
+	int mask_4, a_4, b_4;
+	int mask_2, a_2, b_2;
+	int mask_1, a_1, b_1;
     // fill = x < 0 ? ~x : x;
-    unsigned fill = x ^ (x >> 31);
+    int fill = x ^ (x >> 31);
 	fill = (fill >> 1) | fill;
 	fill = (fill >> 2) | fill;
 	fill = (fill >> 4) | fill;
@@ -319,40 +326,40 @@ int howManyBits(int x) {
 	// add up all bits
 
 	// mask_16 = 0101...
-	unsigned mask_16 = 0x55;
+	mask_16 = 0x55;
 	mask_16 = (mask_16 << 8) | mask_16;
 	mask_16 = (mask_16 << 16) | mask_16;
-	unsigned a_16 = mask_16 & fill;
-	unsigned b_16 = (fill & ~mask_16) >> 1;
-	unsigned sum = a_16 + b_16;
+	a_16 = mask_16 & fill;
+	b_16 = (fill & ~mask_16) >> 1;
+	sum = a_16 + b_16;
 
 	// mask_8 = 0011...
-	unsigned mask_8 = 0x33;
+	mask_8 = 0x33;
 	mask_8 = (mask_8 << 8) | mask_8;
 	mask_8 = (mask_8 << 16) | mask_8;
-	unsigned a_8 = sum & mask_8;
-	unsigned b_8 = (sum & ~mask_8) >> 2;
+	a_8 = sum & mask_8;
+	b_8 = (sum & ~mask_8) >> 2;
 	sum = a_8 + b_8;
 
 	// mask_4 = 00001111...
-	unsigned mask_4 = 0x0F;
+	mask_4 = 0x0F;
 	mask_4 = (mask_4 << 8) | mask_4;
 	mask_4 = (mask_4 << 16) | mask_4;
-	unsigned a_4 = sum & mask_4;
-	unsigned b_4 = (sum & ~mask_4) >> 4;
+	a_4 = sum & mask_4;
+	b_4 = (sum & ~mask_4) >> 4;
 	sum = a_4 + b_4;
 
 	// mask_2 = 0x00FF00FF
-	unsigned mask_2 = 0xFF;
+	mask_2 = 0xFF;
 	mask_2 = (mask_2 << 16) | mask_2;
-	unsigned a_2 = sum & mask_2;
-	unsigned b_2 = (sum & ~mask_2) >> 8;
+	a_2 = sum & mask_2;
+	b_2 = (sum & ~mask_2) >> 8;
 	sum = a_2 + b_2;
 	
 	// mask_1 should be 0x0000FFFF, but sum won't be greater than 16
-	unsigned mask_1 = 0xFF;
-	unsigned a_1 = sum & mask_1;
-	unsigned b_1 = (sum & ~mask_1) >> 16;
+	mask_1 = 0xFF;
+	a_1 = sum & mask_1;
+	b_1 = (sum & ~mask_1) >> 16;
 	sum = a_1 + b_1;
 	
 	return sum + 1;
