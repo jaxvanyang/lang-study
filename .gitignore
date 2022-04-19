@@ -11,6 +11,8 @@ a.*
 __pycache__/
 out/
 .vscode/
+bin/
+build/
 
 # gdb history
 .gdb_history

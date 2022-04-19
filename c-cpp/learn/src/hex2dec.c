@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-inline int hex2dec_char(char ch) {
+int hex2dec_char(char ch) {
 	ch = tolower(ch);
 	return isdigit(ch) ? ch - '0' : ch - 'a' + 10;
 }
