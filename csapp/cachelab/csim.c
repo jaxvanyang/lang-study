@@ -1,6 +1,11 @@
+/**
+ * CLI not completed, but it does't matter
+ */
+
 #include "cachelab.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <getopt.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -25,47 +30,40 @@ void print_arg(const Arg *arg) {
 
 typedef enum {OK, FAIL, HELP} ParseResult;
 
-ParseResult parse_arg(const int argc, const char *argv[], Arg *arg) {
-	if (argc == 1) return FAIL;
-	for (int i = 1; i < argc; ++i) {
-		if (argv[i][0] == '-') {
-			int n = strlen(argv[i]);
-			for (int j = 1; j < n; ++j) {
-				switch (argv[i][j]) {
-					case 'h':
-						return HELP;
-					case 'v':
-						arg->isVerbose = 1;
-						break;
-					default:
-						if (i + 1 >= argc) return FAIL;
-
-						switch (argv[i][j]) {
-							case 's':
-								arg->s = atoi(argv[i + 1]);
-								arg->S = 1ll << arg->s;
-								break;
-							case 'E':
-								arg->E = atoi(argv[i + 1]);
-								break;
-							case 'b':
-								arg->b = atoi(argv[i + 1]);
-								arg->B = 1ll << arg->b;
-								break;
-							case 't':
-								arg->infile = fopen(argv[i + 1], "r");
-								break;
-							default:
-								return FAIL;
-						}
-						++i;
-						j = n;
-				}
-			}
-		} else {
-			return FAIL;
+ParseResult parse_arg(const int argc, char *const argv[], Arg *arg) {
+	const char optstring[] = "s:E:b:t:hv";
+	int opt;
+	while (~(opt = getopt(argc, argv, optstring))) {
+		switch (opt) {
+			case 'h':
+				return HELP;
+			case 'v':
+				arg->isVerbose = 1;
+				break;
+			case 's':
+				if (optarg == NULL) return FAIL;
+				arg->s = atoi(optarg);
+				break;
+			case 'E':
+				if (optarg == NULL) return FAIL;
+				arg->E = atoi(optarg);
+				break;
+			case 'b':
+				if (optarg == NULL) return FAIL;
+				arg->b = atoi(optarg);
+				break;
+			case 't':
+				if (optarg == NULL) return FAIL;
+				arg->infile = fopen(optarg, "r");
+				break;
+			default:
+				return FAIL;
 		}
 	}
+
+	arg->S = 1ll << arg->s;
+	arg->B = 1ll << arg->b;
+
 	return OK;
 }
 
@@ -153,7 +151,7 @@ void access_cache(Line *cache, size_t row, size_t E, unsigned long tag, int time
 	}
 }
 
-int main(const int argc, const char *argv[]) {
+int main(const int argc, char *const argv[]) {
 	Arg arg;
 	init_arg(&arg);
 	ParseResult res = parse_arg(argc, argv, &arg);
@@ -163,7 +161,7 @@ int main(const int argc, const char *argv[]) {
 		return res;
 	} else if (res == HELP) {
 		help(argv[0]);
-		return res;
+		return 0;
 	}
 
 	int s = arg.s, b = arg.b;
