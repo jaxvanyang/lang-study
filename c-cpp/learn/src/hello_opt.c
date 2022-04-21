@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #ifndef MY_DEBUG
@@ -103,10 +104,10 @@ int main(const int argc, char *const argv[]) {
 	strcpy(s, argv[optind]);
 
 	switch (case_type) {
-		case UPPER:
+		case 1:	// UPPER
 			for (int i = 0; i < len; ++i) s[i] = toupper(s[i]);
 			break;
-		case LOWER:
+		case 2:	// LOWER
 			for (int i = 0; i < len; ++i) s[i] = tolower(s[i]);
 			break;
 	}
