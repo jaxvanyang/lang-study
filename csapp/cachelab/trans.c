@@ -103,99 +103,30 @@ char trans_64x64_desc[] = "Transpose for 64 x 64 matrix";
 void trans_64x64(int M, int N, int A[N][M], int B[M][N]) {
 	int ii, jj, i, j;
 	int x0, x1, x2, x3, x4, x5, x6, x7;
+
 	for (ii = 0; ii < N; ii += 8) {
 		for (jj = 0; jj < M; jj += 8) {
-			for (i = ii; i < ii  + 4; i += 2) {
-				x0 = A[i][jj + 0];
-				x1 = A[i][jj + 1];
-				x2 = A[i][jj + 2];
-				x3 = A[i][jj + 3];
-				x4 = A[i + 1][jj + 0];
-				x5 = A[i + 1][jj + 1];
-				x6 = A[i + 1][jj + 2];
-				x7 = A[i + 1][jj + 3];
+			for (i = ii; i < ii + 4; ++i) {
+				x0 = A[i][jj], x1 = A[i][jj + 1], x2 = A[i][jj + 2], x3 = A[i][jj + 3];
+				x4 = A[i][jj + 4], x5 = A[i][jj + 5], x6 = A[i][jj + 6], x7 = A[i][jj + 7];
 
-				B[jj + 0][i] = x0;
-				B[jj + 1][i] = x1;
-				B[jj + 2][i] = x2;
-				B[jj + 3][i] = x3;
-				B[jj + 0][i + 1] = x4;
-				B[jj + 1][i + 1] = x5;
-				B[jj + 2][i + 1] = x6;
-				B[jj + 3][i + 1] = x7;
+				B[jj][i] = x0, B[jj + 1][i] = x1, B[jj + 2][i] = x2, B[jj + 3][i] = x3;
+				B[jj][i + 4] = x4, B[jj + 1][i + 4] = x5, B[jj + 2][i + 4] = x6, B[jj + 3][i + 4] = x7;
 			}
 
-			x0 = A[ii][jj + 4];
-			x1 = A[ii][jj + 5];
-			x2 = A[ii + 1][jj + 4];
-			x3 = A[ii + 1][jj + 5];
-			x4 = A[ii][jj + 6];
-			x5 = A[ii][jj + 7];
-			x6 = A[ii + 1][jj + 6];
-			x7 = A[ii + 1][jj + 7];
+			for (j = jj; j < jj + 4; ++j) {
+				x0 = A[ii + 4][j], x1 = A[ii + 5][j], x2 = A[ii + 6][j], x3 = A[ii + 7][j];
+				x4 = B[j][ii + 4], x5 = B[j][ii + 5], x6 = B[j][ii + 6], x7 = B[j][ii + 7];
 
-			for (i = ii + 4; i < ii + 6; ++i) {
-				for (j = jj; j < jj + 4; ++j) {
-					B[j][i] = A[i][j];
-				}
+				B[j][ii + 4] = x0, B[j][ii + 5] = x1, B[j][ii + 6] = x2, B[j][ii + 7] = x3;
+				B[j + 4][ii] = x4, B[j + 4][ii + 1] = x5, B[j + 4][ii + 2] = x6, B[j + 4][ii + 3] = x7;
 			}
-
-			for (i = ii + 2; i < ii + 4; ++i) {
-				for (j = jj + 4; j < jj + 6; ++j) {
-					B[j][i] = A[i][j];
-				}
-			}
-
-			B[jj + 4][ii] = x0;
-			B[jj + 5][ii] = x1;
-			B[jj + 4][ii + 1] = x2;
-			B[jj + 5][ii + 1] = x3;
-
-			x0 = A[ii + 2][jj + 6];
-			x1 = A[ii + 2][jj + 7];
-			x2 = A[ii + 3][jj + 6];
-			x3 = A[ii + 3][jj + 7];
-
-			for (i = ii + 6; i < ii + 8; ++i) {
-				for (j = jj + 2; j < jj + 4; ++j) {
-					B[j][i] = A[i][j];
-				}
-			}
-
-			B[jj + 6][ii] = x4;
-			B[jj + 7][ii] = x5;
-			B[jj + 6][ii + 1] = x6;
-			B[jj + 7][ii + 1] = x7;
-			
-			B[jj + 6][ii + 2] = x0;
-			B[jj + 7][ii + 2] = x1;
-			B[jj + 6][ii + 3] = x2;
-			B[jj + 7][ii + 3] = x3;
 
 			for (i = ii + 4; i < ii + 8; i += 2) {
-				x0 = A[i][jj + 4];
-				x1 = A[i][jj + 5];
-				x2 = A[i][jj + 6];
-				x3 = A[i][jj + 7];
-				x4 = A[i + 1][jj + 4];
-				x5 = A[i + 1][jj + 5];
-				x6 = A[i + 1][jj + 6];
-				x7 = A[i + 1][jj + 7];
-
-				B[jj + 4][i] = x0;
-				B[jj + 5][i] = x1;
-				B[jj + 6][i] = x2;
-				B[jj + 7][i] = x3;
-				B[jj + 4][i + 1] = x4;
-				B[jj + 5][i + 1] = x5;
-				B[jj + 6][i + 1] = x6;
-				B[jj + 7][i + 1] = x7;
-			}
-
-			for (i = ii + 6; i < ii + 8; ++i) {
-				for (j = jj; j < jj + 2; ++j) {
-					B[j][i] = A[i][j];
-				}
+				x0 = A[i][jj + 4], x1 = A[i][jj + 5], x2 = A[i][jj + 6], x3 = A[i][jj + 7];
+				x4 = A[i + 1][jj + 4], x5 = A[i + 1][jj + 5], x6 = A[i + 1][jj + 6], x7 = A[i + 1][jj + 7];
+				B[jj + 4][i] = x0, B[jj + 5][i] = x1, B[jj + 6][i] = x2, B[jj + 7][i] = x3;
+				B[jj + 4][i + 1] = x4, B[jj + 5][i + 1] = x5, B[jj + 6][i + 1] = x6, B[jj + 7][i + 1] = x7;
 			}
 		}
 	}
