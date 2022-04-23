@@ -49,7 +49,7 @@ int validate(int fn,int M, int N, int A[N][M], int B[M][N]) {
 int main(int argc, char* argv[]){
     int i;
 
-    char c;
+    int c;
     int selectedFunc=-1;
     while( (c=getopt(argc,argv,"M:N:F:")) != -1){
         switch(c){

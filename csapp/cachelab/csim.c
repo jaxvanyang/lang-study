@@ -177,7 +177,7 @@ int main(const int argc, char *const argv[]) {
 		return FAIL;
 	}
 
-	char ops[5], buf[30], addrs[20];
+	char ops[5], buf[30], addrs[30];
 	int size, time = 0;
 	int totalHit = 0, totalMiss = 0, totalEviction = 0;
 	while (~fscanf(infile, "%1s%29s", ops, buf)) {
