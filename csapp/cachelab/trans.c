@@ -15,6 +15,7 @@ void trans(int M, int N, int A[N][M], int B[M][N]);
 void trans_32x32(int M, int N, int A[N][M], int B[M][N]);
 void trans_4x4_block(int M, int N, int A[N][M], int B[M][N]);
 void trans_64x64(int M, int N, int A[N][M], int B[M][N]);
+void trans_block(int M, int N, int bsize, int A[N][M], int B[M][N]);
 
 /* 
  * transpose_submit - This is the solution transpose function that you
@@ -28,13 +29,28 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
 	if (M == 32 && N == 32) trans_32x32(M, N, A, B);
 	else if (M == 64 && N == 64) trans_64x64(M, N, A, B);
-	else trans(M, N, A, B);
+	// else if (M == 64 && N == 64) trans_block(M, N, 8, A, B);
+	else trans_block(M, N, 16, A, B);
 }
 
 /* 
  * You can define additional transpose functions below. We've defined
  * a simple one below to help you get started. 
  */ 
+void trans_block(int M, int N, int bsize, int A[N][M], int B[M][N]) {
+	int ii, jj, i, j, ilmt, jlmt;
+	for (ii = 0; ii < N; ii += bsize) {
+		for (jj = 0; jj < M; jj += bsize) {
+			ilmt = N < ii + bsize ? N : ii + bsize;
+			jlmt = M < jj + bsize ? M : jj + bsize;
+			for (i = ii; i < ilmt; ++i) {
+				for (j = jj; j < jlmt; ++j) {
+					B[j][i] = A[i][j];
+				}
+			}
+		}
+	}
+}
 char trans_32x32_desc[] = "Transpose for 32 x 32 matrix";
 void trans_32x32(int M, int N, int A[N][M], int B[M][N]) {
 	const int bsize = 8;
@@ -85,80 +101,99 @@ void trans_4x4_block(int M, int N, int A[N][M], int B[M][N]) {
 
 char trans_64x64_desc[] = "Transpose for 64 x 64 matrix";
 void trans_64x64(int M, int N, int A[N][M], int B[M][N]) {
-	const int bsize = 8;
-	for (int ii = 0; ii < N; ii += bsize) {
-		for (int jj = 0; jj < M; jj += bsize) {
-			// transpose 4 x 4 sub-matrix first
-			for (int i = ii; i < ii + 4; ++i) {
-				for (int j = jj; j < jj + 4; ++j) {
+	int ii, jj, i, j;
+	int x0, x1, x2, x3, x4, x5, x6, x7;
+	for (ii = 0; ii < N; ii += 8) {
+		for (jj = 0; jj < M; jj += 8) {
+			for (i = ii; i < ii  + 4; i += 2) {
+				x0 = A[i][jj + 0];
+				x1 = A[i][jj + 1];
+				x2 = A[i][jj + 2];
+				x3 = A[i][jj + 3];
+				x4 = A[i + 1][jj + 0];
+				x5 = A[i + 1][jj + 1];
+				x6 = A[i + 1][jj + 2];
+				x7 = A[i + 1][jj + 3];
+
+				B[jj + 0][i] = x0;
+				B[jj + 1][i] = x1;
+				B[jj + 2][i] = x2;
+				B[jj + 3][i] = x3;
+				B[jj + 0][i + 1] = x4;
+				B[jj + 1][i + 1] = x5;
+				B[jj + 2][i + 1] = x6;
+				B[jj + 3][i + 1] = x7;
+			}
+
+			x0 = A[ii][jj + 4];
+			x1 = A[ii][jj + 5];
+			x2 = A[ii + 1][jj + 4];
+			x3 = A[ii + 1][jj + 5];
+			x4 = A[ii][jj + 6];
+			x5 = A[ii][jj + 7];
+			x6 = A[ii + 1][jj + 6];
+			x7 = A[ii + 1][jj + 7];
+
+			for (i = ii + 4; i < ii + 6; ++i) {
+				for (j = jj; j < jj + 4; ++j) {
 					B[j][i] = A[i][j];
 				}
 			}
 
-			// store tmp
-			int x0 = A[ii + 0][jj + 4];
-			int x1 = A[ii + 1][jj + 4];
-			int x2 = A[ii + 2][jj + 4];
-			int x3 = A[ii + 3][jj + 4];
-			int x4 = A[ii + 0][jj + 5];
-			int x5 = A[ii + 1][jj + 5];
-			int x6 = A[ii + 2][jj + 5];
-			int x7 = A[ii + 3][jj + 5];
-
-			// copy b data
-			for (int j = jj + 6; j < jj + 8; ++j) {
-				for (int i = ii; i < ii + 4; ++i) {
-					B[j - 4][i + 4] = A[i][j];
+			for (i = ii + 2; i < ii + 4; ++i) {
+				for (j = jj + 4; j < jj + 6; ++j) {
+					B[j][i] = A[i][j];
 				}
 			}
+
+			B[jj + 4][ii] = x0;
+			B[jj + 5][ii] = x1;
+			B[jj + 4][ii + 1] = x2;
+			B[jj + 5][ii + 1] = x3;
+
+			x0 = A[ii + 2][jj + 6];
+			x1 = A[ii + 2][jj + 7];
+			x2 = A[ii + 3][jj + 6];
+			x3 = A[ii + 3][jj + 7];
+
+			for (i = ii + 6; i < ii + 8; ++i) {
+				for (j = jj + 2; j < jj + 4; ++j) {
+					B[j][i] = A[i][j];
+				}
+			}
+
+			B[jj + 6][ii] = x4;
+			B[jj + 7][ii] = x5;
+			B[jj + 6][ii + 1] = x6;
+			B[jj + 7][ii + 1] = x7;
 			
-			// 4 x 4 area d's half
-			for (int j = jj + 4; j < jj + 6; ++j) {
-				for (int i = ii + 4; i < ii + 8; ++i) {
-					B[j][i] = A[i][j];
-				}
+			B[jj + 6][ii + 2] = x0;
+			B[jj + 7][ii + 2] = x1;
+			B[jj + 6][ii + 3] = x2;
+			B[jj + 7][ii + 3] = x3;
+
+			for (i = ii + 4; i < ii + 8; i += 2) {
+				x0 = A[i][jj + 4];
+				x1 = A[i][jj + 5];
+				x2 = A[i][jj + 6];
+				x3 = A[i][jj + 7];
+				x4 = A[i + 1][jj + 4];
+				x5 = A[i + 1][jj + 5];
+				x6 = A[i + 1][jj + 6];
+				x7 = A[i + 1][jj + 7];
+
+				B[jj + 4][i] = x0;
+				B[jj + 5][i] = x1;
+				B[jj + 6][i] = x2;
+				B[jj + 7][i] = x3;
+				B[jj + 4][i + 1] = x4;
+				B[jj + 5][i + 1] = x5;
+				B[jj + 6][i + 1] = x6;
+				B[jj + 7][i + 1] = x7;
 			}
 
-			// store tmp
-			B[jj + 4][ii + 0] = x0;
-			B[jj + 4][ii + 1] = x1;
-			B[jj + 4][ii + 2] = x2;
-			B[jj + 4][ii + 3] = x3;
-			B[jj + 5][ii + 0] = x4;
-			B[jj + 5][ii + 1] = x5;
-			B[jj + 5][ii + 2] = x6;
-			B[jj + 5][ii + 3] = x7;
-
-			// data -> tmp
-			x0 = B[jj + 2][ii + 4];
-			x1 = B[jj + 2][ii + 5];
-			x2 = B[jj + 2][ii + 6];
-			x3 = B[jj + 2][ii + 7];
-			x4 = B[jj + 3][ii + 4];
-			x5 = B[jj + 3][ii + 5];
-			x6 = B[jj + 3][ii + 6];
-			x7 = B[jj + 3][ii + 7];
-
-			// store tmp
-			B[jj + 6][ii + 0] = x0;
-			B[jj + 6][ii + 1] = x1;
-			B[jj + 6][ii + 2] = x2;
-			B[jj + 6][ii + 3] = x3;
-			B[jj + 7][ii + 0] = x4;
-			B[jj + 7][ii + 1] = x5;
-			B[jj + 7][ii + 2] = x6;
-			B[jj + 7][ii + 3] = x7;
-
-			// 4 x 4 area d's another half
-			for (int j = jj + 6; j < jj + 8; ++j) {
-				for (int i = ii + 4; i < ii + 8; ++i) {
-					B[j][i] = A[i][j];
-				}
-			}
-
-			// copy area c directly
-			for (int i = ii + 4; i < ii + 8; ++i) {
-				for (int j = jj; j < jj + 4; ++j) {
+			for (i = ii + 6; i < ii + 8; ++i) {
+				for (j = jj; j < jj + 2; ++j) {
 					B[j][i] = A[i][j];
 				}
 			}
