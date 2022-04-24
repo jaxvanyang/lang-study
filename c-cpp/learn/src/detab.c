@@ -40,7 +40,7 @@ int main(const int argc, char *const argv[]) {
 void help_msg(char const* cmd) {
 	static char const msg[] =
 		"Description: replace input's tabs with blanks\n"
-		"Usage: %s -n <blank_cnt> -f <file> -h\n"
+		"Usage: %s -n <tab_size> -f <file> -h\n"
 		"Default: n = 2, f = stdin\n"
 		"Example: %s -n 2 -f a.c\n";
 	printf(msg, cmd, cmd);
@@ -57,8 +57,8 @@ void parse_arg(const int argc, char *const argv[],
 			case 'n':
 				if (!optarg) help_msg(argv[0]), exit(EXIT_FAILURE);
 				*n = atoi(optarg);
-				if (*n < 0) {
-					perror("Error: negative n is not allowed!");
+				if (*n <= 0) {
+					perror("Error: tab size must be positive");
 					help_msg(argv[0]);
 					exit(EXIT_FAILURE);
 				}
