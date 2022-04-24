@@ -1,7 +1,7 @@
 /**
- * replace input's tabs with blanks
+ * replace input's blanks with tabs
  *
- * Exercise 1-20 for K & R
+ * Exercise 1-21 for K & R
  */
 
 #include <stdlib.h>
@@ -19,17 +19,18 @@ int main(const int argc, char *const argv[]) {
 
 	parse_arg(argc, argv, &n, &in);
 
-	char tab_s[n + 1];
-	for (int i = 0; i < n; ++i) tab_s[i] = ' ';
-	tab_s[n] = '\0';
-
 	char c;
+	int cnt = 0;
 	while ((fscanf(in, "%c", &c) != EOF)) {
 		switch (c) {
-			case '\t':
-				printf("%s", tab_s);
+			case ' ':
+				++cnt;
 				break;
 			default:
+				for (int i = 0; i < cnt / n; ++i) putchar('\t');
+				cnt %= n;
+				for (int i = 0; i < cnt; ++i) putchar(' ');
+				cnt = 0;
 				putchar(c);
 		}
 	}
@@ -39,7 +40,7 @@ int main(const int argc, char *const argv[]) {
 
 void help_msg(char const* cmd) {
 	static char const msg[] =
-		"Description: replace input's tabs with blanks\n"
+		"Description: replace input's blankss with tabs\n"
 		"Usage: %s -n <blank_cnt> -f <file> -h\n"
 		"Default: n = 2, f = stdin\n"
 		"Example: %s -n 2 -f a.c\n";
