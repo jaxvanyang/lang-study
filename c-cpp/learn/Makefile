@@ -11,7 +11,7 @@ CCOBJS := $(CCSRCS:%.cc=$(CCBUILD_DIR)/%.o)
 OBJS := $(COBJS) $(CCOBJS)
 OUTS := $(OBJS:%.o=%)
 
-CPPFLAGS := $(INC_FLAGS) -Wall -g -Iinclude
+CPPFLAGS := $(INC_FLAGS) -Wall -Werror -g -Iinclude
 
 all: $(OUTS)
 	mkdir -p $(BIN_DIR)
