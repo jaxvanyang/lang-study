@@ -8,7 +8,7 @@ SRCS := $(shell find $(SRC_DIR) -name '*.c')
 OBJS := $(SRCS:%.c=$(BUILD_DIR)/%.o)
 OUTS := $(SRCS:%.c=$(BUILD_DIR)/%)
 
-CPPFLAGS := $(INC_FLAGS) -Wall -g
+CPPFLAGS := $(INC_FLAGS) -Wall -Werror -g
 
 all: $(OUTS)
 	mkdir -p $(BIN_DIR)
