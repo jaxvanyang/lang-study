@@ -160,7 +160,29 @@ int main(int argc, char **argv) {
  * background children don't receive SIGINT (SIGTSTP) from the kernel
  * when we type ctrl-c (ctrl-z) at the keyboard.
  */
-void eval(char *cmdline) { return; }
+void eval(char *cmdline) {
+  // n is always greater than 0
+  ssize_t n = strlen(cmdline);
+  if (n == 1 && cmdline[0] == '\n') {
+    return;
+  }
+
+  char *argv[MAXARGS];
+  int bg = parseline(cmdline, argv);
+  int builtin = builtin_cmd(argv);
+  if (builtin) return;
+
+  pid_t pid;
+  if ((pid = fork()) < 0) unix_error("fork error");
+  waitfg(pid);
+  if (pid == 0) {
+    setpgid(0, 0);
+    if (execve(argv[0], argv, environ) < 0) {
+      printf("%s: Command not found\n", cmdline);
+      return;
+    }
+  }
+}
 
 /*
  * parseline - Parse the command line and build the argv array.
@@ -220,7 +242,34 @@ int parseline(const char *cmdline, char **argv) {
  * builtin_cmd - If the user has typed a built-in command then execute
  *    it immediately.
  */
-int builtin_cmd(char **argv) { return 0; /* not a builtin command */ }
+int builtin_cmd(char **argv) {
+  if (!strcmp(argv[0], "quit")) {
+    exit(EXIT_SUCCESS);
+  } else if (!strcmp(argv[0], "jobs")) {
+    for (int i = 1; i < nextjid; ++i) {
+      printf("[%d] (%d)", i, jobs[i].pid);
+      switch (jobs[i].state) {
+        case UNDEF:
+          printf(" Undifined");
+          break;
+        case FG:
+        case BG:
+          printf(" Running");
+          break;
+        default:
+          app_error("Unknown job state");
+      }
+      puts(jobs[i].cmdline);
+    }
+  } else if (!strcmp(argv[0], "fg")) {
+    do_bgfg(argv);
+  } else if (!strcmp(argv[0], "bg")) {
+    do_bgfg(argv);
+  } else {
+    return 0; /* not a builtin command */
+  }
+  return 1;  // builtin command
+}
 
 /*
  * do_bgfg - Execute the builtin bg and fg commands
@@ -230,7 +279,17 @@ void do_bgfg(char **argv) { return; }
 /*
  * waitfg - Block until process pid is no longer the foreground process
  */
-void waitfg(pid_t pid) { return; }
+void waitfg(pid_t pid) {
+  int status;
+  if (waitpid(pid, &status, WUNTRACED) > 0) {
+    if (WIFEXITED(status)) {
+      return;
+    } else if (WIFSTOPPED(status)) {
+      return;
+    }
+  }
+  return;
+}
 
 /*****************
  * Signal handlers
