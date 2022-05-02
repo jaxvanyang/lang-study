@@ -14,7 +14,7 @@ void insertion_sort(T *arr, int size) {
 }
 
 template <typename T>
-void insertion_sort(vector<T> &arr) {
+void insertion_sort(std::vector<T> &arr) {
   int size = arr.size();
   for (int i = 1; i < size; i++) {
     T key = arr[i];
