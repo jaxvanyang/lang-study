@@ -1,9 +1,0 @@
-# Test data
-data.in
-data.out
-data.ans
-
-# Program file
-quick_sort
-random
-test
