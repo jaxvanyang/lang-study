@@ -27,6 +27,7 @@ trans.o: trans.c
 clean:
 	rm -rf *.o
 	rm -f *.tar
+	rm -f *.tmp
 	rm -f csim
 	rm -f test-trans tracegen
 	rm -f trace.all trace.f*

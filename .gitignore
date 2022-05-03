@@ -1,18 +1,17 @@
-*\.exe
-*\.out
-*\.o
-*\.tmp
-*\.log
-*\.jar
-
-# 最常用的临时代码
-a.*
-
-__pycache__/
-out/
 .vscode/
+__pycache__/
 bin/
 build/
 
-# gdb history
+# C/C++ compiled file
+*.exe
+*.out
+*.o
+
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
 .gdb_history
