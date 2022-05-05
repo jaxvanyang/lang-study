@@ -201,13 +201,16 @@ void eval(char *cmdline) {
   Sigprocmask(SIG_BLOCK, &mask_all, NULL);
   addjob(jobs, pid, bg ? BG : FG, cmdline);
   struct job_t *job = getjobpid(jobs, pid);
+
   if (bg) {
     printf("[%d] (%d) %s", job->jid, job->pid, job->cmdline);
   } else {
-    // waitfg will unblock SIGCHLD, so it's ok to run before unblock
+    // unblock signals before waitfg, because waitfg needs to be able to
+    // receive other signals and it will block SIGCHLD for testing
+    Sigprocmask(SIG_SETMASK, &prev, NULL);
     waitfg(pid);
   }
-  // unblock all signals
+
   Sigprocmask(SIG_SETMASK, &prev, NULL);
 }
 
@@ -306,7 +309,7 @@ void do_bgfg(char **argv) {
     }
     pid = job->pid;
   } else {
-    if ((pid = atoi(argv[1])) < 0) {
+    if ((pid = atoi(argv[1])) <= 0) {
       fprintf(stderr, "%s: argument must be a PID or %%jobid\n", argv[0]);
     }
     if ((job = getjobpid(jobs, pid)) == NULL) {
@@ -316,40 +319,48 @@ void do_bgfg(char **argv) {
   }
 
   sigset_t mask, prev;
-
+  Sigemptyset(&mask);
+  Sigaddset(&mask, SIGCHLD);
   // blcok SIGCHLD to avoid race with sigchld_handler
-  if (sigemptyset(&mask) == -1) unix_error("sigemptyset error");
-  if (sigaddset(&mask, SIGCHLD) == -1) unix_error("sigaddset error");
+  // this function will modified job state, and so will sigchild_handler
   Sigprocmask(SIG_BLOCK, &mask, &prev);
 
   if (!strcmp(argv[0], "fg")) {
     if (job->state != UNDEF) {
       job->state = FG;
+      kill(-pid, SIGCONT);
+      // unblock SIGCHLD because waitfg requires it
+      Sigprocmask(SIG_SETMASK, &prev, NULL);
       waitfg(pid);
     }
+    // reset SIGCHLD
   } else {
-    kill(-pid, SIGCONT);
+    printf("[%d] (%d) %s", job->jid, job->pid, job->cmdline);
+    if (job->state != UNDEF) {
+      job->state = BG;
+      // no need to unblock SIGCHLD, because signal will go to another process
+      kill(-pid, SIGCONT);
+    }
   }
 
-  // reset SIGCHLD
-  if (sigprocmask(SIG_SETMASK, &prev, NULL) < 0)
-    unix_error("sigprocmask error");
-  return;
+  Sigprocmask(SIG_SETMASK, &prev, NULL);
 }
 
 /*
  * waitfg - Block until process pid is no longer the foreground process
+ *    need to unblock SIGCHLD first to call this function
  */
 void waitfg(pid_t pid) {
   sigset_t mask, prev;
   struct job_t *job = getjobpid(jobs, pid);
 
-  // block SIGCHLD to ensure control get into while safely
+  // block SIGCHLD to ensure control get into while statement safely
   Sigemptyset(&mask);
   Sigaddset(&mask, SIGCHLD);
-  Sigprocmask(SIG_BLOCK, &mask, NULL);
+  Sigprocmask(SIG_BLOCK, &mask, &prev);
 
   while (job->state == FG) {
+    // unblock SIGCHLD
     sigsuspend(&prev);
   }
 
@@ -377,33 +388,44 @@ void sigchld_handler(int sig) {
   // block all signals to ensure deletejob doesn't get interrupted
   Sigfillset(&mask);
 
+  // try to reap all process that are stopped or terminated
   while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
     struct job_t *job = getjobpid(jobs, pid);
     if (WIFEXITED(status)) {
       Sigprocmask(SIG_BLOCK, &mask, &prev);
+      // it's ok to call non-async-safe function here,
+      // because all signals are blocked
+      // printf("Job [%d] (%d) exited with %d\n", job->jid, pid, WEXITSTATUS(status));
       deletejob(jobs, pid);
+      Sigprocmask(SIG_SETMASK, &prev, NULL);
     } else if (WIFSIGNALED(status)) {
-      deletejob(jobs, pid);
-      sio_puts("Job ");
+      Sigprocmask(SIG_BLOCK, &mask, &prev);
+      sio_puts("Job [");
+      sio_putl(job->jid);
+      sio_puts("] (");
       sio_putl(pid);
-      sio_puts(" terminated by signal ");
-      sio_puts(strsignal(WTERMSIG(status)));
+      sio_puts(") terminated by signal ");
+      // sio_puts(strsignal(WTERMSIG(status)));
+      sio_putl(WTERMSIG(status));
       sio_puts("\n");
+      deletejob(jobs, pid);
+      Sigprocmask(SIG_BLOCK, &prev, NULL);
     } else if (WIFSTOPPED(status)) {
       job->state = ST;
       sio_puts("Job [");
       sio_putl(job->jid);
-      sio_puts("] ");
+      sio_puts("] (");
       sio_putl(pid);
-      sio_puts(" stopped by signal ");
-      sio_puts(strsignal(WSTOPSIG(status)));
+      sio_puts(") stopped by signal ");
+      // sio_puts(strsignal(WSTOPSIG(status)));
+      sio_putl(WSTOPSIG(status));
       sio_puts("\n");
     } else {
       unix_error("sigchild_handler error");
     }
   }
 
-  if (errno != ECHILD) unix_error("waitpid error");
+  // if (errno != ECHILD) unix_error("waitpid error");
 
   errno = olderrno;
 }
@@ -415,6 +437,20 @@ void sigchld_handler(int sig) {
  */
 void sigint_handler(int sig) {
   int olderrno = errno;
+  sigset_t mask, prev;
+
+  // block all signals to synchronize stream
+  Sigfillset(&mask);
+  Sigprocmask(SIG_BLOCK, &mask, &prev);
+
+  for (int i = 0; i < MAXJOBS; ++i) {
+    if (jobs[i].state == FG) {
+      kill(-jobs[i].pid, SIGINT);
+      break;
+    }
+  }
+
+  Sigprocmask(SIG_SETMASK, &prev, NULL);
 
   errno = olderrno;
   return;
@@ -427,6 +463,20 @@ void sigint_handler(int sig) {
  */
 void sigtstp_handler(int sig) {
   int olderrno = errno;
+  sigset_t mask, prev;
+  
+  // block all signals to synchronize stream
+  Sigfillset(&mask);
+  Sigprocmask(SIG_BLOCK, &mask, &prev);
+
+  for (int i = 0; i < MAXJOBS; ++i) {
+    if (jobs[i].state == FG) {
+      kill(-jobs[i].pid, SIGTSTP);
+      break;
+    }
+  }
+
+  Sigprocmask(SIG_SETMASK, &prev, NULL);
 
   errno = olderrno;
   return;
