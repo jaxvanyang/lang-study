@@ -66,7 +66,7 @@ team_t team = {
 
 // Given block ptr bp, compute address of next and previous blocks
 #define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE(((char *)(bp)-WSIZE)))
-#define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE(((char *)(bp)-DSIZE)))
+#define PREV_BLKP(bp) ((char *)(bp)-GET_SIZE(((char *)(bp)-DSIZE)))
 
 // heap pointer range
 static void *heap_listp;
@@ -77,9 +77,9 @@ static void *heap_endp;
  */
 int mm_init(void) {
   // we can use page size as allocation unit to improve performance
-  // size_t pagesize = ALIGN(mem_pagesize());
+  size_t pagesize = ALIGN(mem_pagesize());
   size_t min_size = 4 * WSIZE;  // total size of padding and helper blocks
-  size_t alloc_size = min_size;
+  size_t alloc_size = pagesize;
 
   if ((heap_listp = mem_sbrk(alloc_size)) == (void *)-1) {
     return -1;
@@ -219,11 +219,16 @@ void mm_free(void *ptr) {
  * mm_realloc - Implemented simply in terms of mm_malloc and mm_free
  */
 void *mm_realloc(void *ptr, size_t size) {
+  // mm_check();
   void *next_bp, *new_ptr;
   size_t old_size = GET_SIZE(HDRP(ptr));
   size_t align_size = ALIGN(size + DSIZE);
   size_t remain_size;
   size_t next_size;
+
+  // fprintf(stderr,
+  //         "mm_realloc: ptr = %p, size = %d, old_size = %d, align_size = %d\n",
+  //         ptr, size, old_size, align_size);
 
   // modify the old block in place if it satisfies the size requirement
   if (align_size <= old_size) {
@@ -263,10 +268,43 @@ void *mm_realloc(void *ptr, size_t size) {
   }
 
   // allocate a new block and copy the old data
-  mm_free(ptr);               // free the old block
-  new_ptr = mm_malloc(size);  // try to allocate a new block
-  if (new_ptr == NULL) return NULL;
-  memmove(new_ptr, ptr, old_size - DSIZE);  // copy the old data
+  // fprintf(stderr, "mm_realloc: try to allocate a new block\n");
+  mm_free(ptr);  // free the old block, old data won't be overwritten
+  // new_ptr = mm_malloc(size);  // try to allocate a new block
+  for (new_ptr = heap_listp; new_ptr != heap_endp;
+       new_ptr = NEXT_BLKP(new_ptr)) {
+    if (!GET_ALLOC(HDRP(new_ptr)) && GET_SIZE(HDRP(new_ptr)) >= align_size) {
+      break;
+    }
+  }
+  // suitable block not found
+  if (new_ptr == heap_endp) {
+    // try to extend the heap, mm_malloc won't overwrite the old data
+    // so is safe to use mm_malloc here
+    if ((new_ptr = mm_malloc(size)) == NULL) {
+      return NULL;
+    }
+
+    // copy the old data
+    memmove(new_ptr, ptr, old_size - DSIZE);
+    return new_ptr;
+  }
+  // suitable block found, move the old data
+  memmove(new_ptr, ptr, old_size - DSIZE);  // later operation may overwrite
+  // try to split the block
+  remain_size = GET_SIZE(HDRP(new_ptr)) - align_size;
+  if (remain_size <= DSIZE) {
+    // allocate the whole block
+    GET(HDRP(new_ptr)) |= 1;
+    GET(FTRP(new_ptr)) |= 1;
+  } else {
+    // split the block, may overwrite the old data
+    PUT(HDRP(new_ptr), PACK(align_size, 1));  // modified header
+    PUT(FTRP(new_ptr), PACK(align_size, 1));  // modified footer
+    next_bp = NEXT_BLKP(new_ptr);
+    PUT(HDRP(next_bp), remain_size);  // new block header
+    PUT(FTRP(next_bp), remain_size);  // new block footer
+  }
   return new_ptr;
 }
 
@@ -274,7 +312,7 @@ int mm_check(void) {
   char *bp, *next_bp;
   int i;
 
-  fprintf(stderr, "Checking heap consistency...\n");
+  // fprintf(stderr, "Checking heap consistency...\n");
   for (i = 0, bp = heap_listp; bp != heap_endp; ++i, bp = next_bp) {
     next_bp = NEXT_BLKP(bp);
     fprintf(stderr, "%d: bp = %p, next_bp = %p, size = %d, alloc = %d\n", i, bp,
