@@ -32,6 +32,7 @@ void get_filetype(char *filename, char *filetype);
 void serve_dynamic(int fd, char *filename, char *cgiargs);
 void clienterror(int fd, char *cause, char *errnum, char *shortmsg,
                  char *longmsg);
+void sigchld_handler(int sig);
 
 int main(int argc, char **argv) {
   int listenfd, connfd;
@@ -44,6 +45,8 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Usage: %s <port>\n", argv[0]);
     exit(EXIT_FAILURE);
   }
+
+  Signal(SIGCHLD, sigchld_handler);  // Reap dead child processes
 
   listenfd = Open_listenfd(argv[1]);
   clientlen = sizeof(clientaddr);
@@ -191,6 +194,25 @@ void clienterror(int fd, char *cause, char *errnum, char *shortmsg,
   Rio_writen(fd, body, strlen(body));
 }
 
+void sigchld_handler(int sig) {
+  sigset_t block_all, prev_set;
+  int olderrnor = errno;
+
+  // Block all signals to guarantee reaping succeeded
+  Sigfillset(&block_all);
+  Sigprocmask(SIG_BLOCK, &block_all, &prev_set);
+
+  while (waitpid(-1, NULL, WNOHANG | WUNTRACED) > 0)
+    ;
+  if (errno != ECHILD) {
+    unix_error("sigchld_handler error");
+  }
+
+  // Restore previous environment
+  Sigprocmask(SIG_SETMASK, &prev_set, NULL);
+  errno = olderrnor;
+}
+
 // Simply read remaining request headers and print them
 void read_requesthdrs(rio_t *rp) {
   char buf[MAXLINE];
@@ -315,7 +337,9 @@ void get_filetype(char *filename, char *filetype) {
     strcpy(filetype, "image/jpeg");
   else if (strstr(filename, ".png"))
     strcpy(filetype, "image/png");
-  else
+  else if (strstr(filename, ".mp4")) {
+    strcpy(filetype, "video/mp4");
+  } else
     strcpy(filetype, "text/plain");
 }
 
@@ -333,5 +357,4 @@ void serve_dynamic(int fd, char *filename, char *cgiargs) {
     Dup2(fd, STDOUT_FILENO);
     Execve(filename, emptylist, environ);
   }
-  Wait(NULL);  // Parent waits for and reaps child
 }
