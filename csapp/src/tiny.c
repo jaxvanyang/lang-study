@@ -27,9 +27,10 @@ void doit(int fd);
 void read_requesthdrs(rio_t *rp);
 int parse_uri(char *uri, char *filename, char *cgiargs);
 int simplify_uri(char *uri);
-void serve_static(int fd, char *filename, size_t filesize);
+void serve_static(int fd, char *filename, size_t filesize,
+                  char *request_method);
 void get_filetype(char *filename, char *filetype);
-void serve_dynamic(int fd, char *filename, char *cgiargs);
+void serve_dynamic(int fd, char *filename, char *cgiargs, char *request_method);
 void clienterror(int fd, char *cause, char *errnum, char *shortmsg,
                  char *longmsg);
 void sigchld_handler(int sig);
@@ -130,7 +131,7 @@ void doit(int fd) {
   Rio_readlineb(&rio, buf, MAXLINE);
   printf("Request headers:\n%s", buf);
   sscanf(buf, "%s %s %s", method, uri, version);
-  if (strcasecmp(method, "GET")) {
+  if (strcasecmp(method, "GET") && strcasecmp(method, "HEAD")) {
     clienterror(fd, method, "501", "Not Implemented",
                 "Tiny does not implement this method");
     return;
@@ -158,14 +159,14 @@ void doit(int fd) {
                   "Tiny couldn't read the file");
       return;
     }
-    serve_static(fd, filename, sbuf.st_size);
+    serve_static(fd, filename, sbuf.st_size, method);
   } else {  // Serve dynamic content
     if (!(S_ISREG(sbuf.st_mode) && (S_IXUSR & sbuf.st_mode))) {
       clienterror(fd, filename, "403", "Forbidden",
                   "Tiny couldn't run the CGI program");
       return;
     }
-    serve_dynamic(fd, filename, cgiargs);
+    serve_dynamic(fd, filename, cgiargs, method);
   }
 }
 
@@ -303,7 +304,8 @@ int simplify_uri(char *uri) {
   return 1;
 }
 
-void serve_static(int fd, char *filename, size_t filesize) {
+void serve_static(int fd, char *filename, size_t filesize,
+                  char *request_method) {
   int srcfd;
   char *srcp, filetype[MAXTYPE], buf[MAXBUF];
 
@@ -317,6 +319,7 @@ void serve_static(int fd, char *filename, size_t filesize) {
           "Content-type: %s\r\n\r\n",
           filesize, filetype);
   Rio_writen(fd, buf, strlen(buf));
+  if (!strcasecmp(request_method, "HEAD")) return;
   printf("Response headers:\n%s", buf);
 
   // Send response body to client
@@ -343,7 +346,8 @@ void get_filetype(char *filename, char *filetype) {
     strcpy(filetype, "text/plain");
 }
 
-void serve_dynamic(int fd, char *filename, char *cgiargs) {
+void serve_dynamic(int fd, char *filename, char *cgiargs,
+                   char *request_method) {
   char buf[MAXLINE], *emptylist[] = {NULL};
 
   // Send first part of HTTP response headers
@@ -354,6 +358,7 @@ void serve_dynamic(int fd, char *filename, char *cgiargs) {
 
   if (Fork() == 0) {  // Child process
     setenv("QUERY_STRING", cgiargs, 1);
+    setenv("REQUEST_METHOD", request_method, 1);
     Dup2(fd, STDOUT_FILENO);
     Execve(filename, emptylist, environ);
   }

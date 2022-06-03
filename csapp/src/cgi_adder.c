@@ -13,7 +13,7 @@
 #include "csapp.h"
 
 int main() {
-  char *buf, *p;
+  char *buf, *request_method, *p;
   char content[MAXLINE];
   int n1 = 0, n2 = 0;
 
@@ -38,6 +38,11 @@ int main() {
   printf("Connection: close\r\n");
   printf("Content-length: %ld\r\n", strlen(content));
   printf("Content-type: text/html\r\n\r\n");
+  if ((request_method = getenv("REQUEST_METHOD")) &&
+      !strcasecmp(request_method, "HEAD")) {
+    fflush(stdout);
+    return 0;
+  }
   printf("%s", content);
   fflush(stdout);
 
