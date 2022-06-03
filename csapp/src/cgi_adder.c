@@ -13,26 +13,30 @@
 #include "csapp.h"
 
 int main() {
-  char *buf, *request_method, *p;
+  char *buf, *request_method, *p = NULL;
   char content[MAXLINE];
-  int n1 = 0, n2 = 0;
+  long a = 0, b = 0;
 
   // EXtract the two arguments
   if ((buf = getenv("QUERY_STRING")) != NULL) {
-    p = strchr(buf, '&');
-    if (p) {
-      *p = '\0';
-      n1 = atoi(buf);
-      n2 = atoi(p + 1);
+    for (char *iptr = buf; *iptr != '\0'; ++iptr) {
+      if (*iptr == '&') {
+        *iptr = '\0';
+        if (p == NULL) p = iptr + 1;
+      } else if (!isdigit(*iptr)) {
+        *iptr = ' ';
+      }
     }
+    a = strtol(buf, NULL, 10);
+    if (p) b = strtol(p, NULL, 10);
   }
 
   // Make the response body
   sprintf(content,
           "Welcome to add.com: THE Internet addition portal.\r\n<p>"
-          "The answer is: %d + %d = %d\r\n<p>"
+          "The answer is: %ld + %ld = %ld\r\n<p>"
           "Thanks for visiting!\r\n",
-          n1, n2, n1 + n2);
+          a, b, a + b);
 
   // Generate the HTTP response
   printf("Connection: close\r\n");

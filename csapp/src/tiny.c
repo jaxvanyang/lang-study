@@ -24,7 +24,7 @@ PathNode *insert_path(PathNode *pre, char *path);
 void free_list(PathNode *listp);
 
 void doit(int fd);
-void read_requesthdrs(rio_t *rp);
+void read_requesthdrs(rio_t *rp, int *content_length);
 int parse_uri(char *uri, char *filename, char *cgiargs);
 int simplify_uri(char *uri);
 void serve_static(int fd, char *filename, size_t filesize,
@@ -120,7 +120,7 @@ void free_list(PathNode *listp) {
 }
 
 void doit(int fd) {
-  int is_static;
+  int is_static, content_length = 0;
   struct stat sbuf;
   char buf[MAXLINE], method[MAXLINE], uri[MAXLINE], version[MAXLINE];
   char filename[MAXLINE], cgiargs[MAXLINE];
@@ -131,12 +131,13 @@ void doit(int fd) {
   Rio_readlineb(&rio, buf, MAXLINE);
   printf("Request headers:\n%s", buf);
   sscanf(buf, "%s %s %s", method, uri, version);
-  if (strcasecmp(method, "GET") && strcasecmp(method, "HEAD")) {
+  if (strcasecmp(method, "GET") && strcasecmp(method, "HEAD") &&
+      strcasecmp(method, "POST")) {
     clienterror(fd, method, "501", "Not Implemented",
                 "Tiny does not implement this method");
     return;
   }
-  read_requesthdrs(&rio);  // process remaining headers
+  read_requesthdrs(&rio, &content_length);  // process remaining headers
 
   // check and simplify the URI
   if (!simplify_uri(uri)) {
@@ -145,12 +146,16 @@ void doit(int fd) {
   }
   // printf("Simplified URI: %s\n", uri);
 
-  // Parse URI from GET request
+  // Parse URI from request
   is_static = parse_uri(uri, filename, cgiargs);
   if (stat(filename, &sbuf) < 0) {  // check if the file exists
     clienterror(fd, filename, "404", "Not found",
                 "Tiny couldn't find this file");
     return;
+  }
+  if (content_length != 0) {  // process request body for POST
+    Rio_readnb(&rio, cgiargs, content_length);
+    cgiargs[content_length] = '\0';
   }
 
   if (is_static) {  // Serve static content
@@ -215,11 +220,14 @@ void sigchld_handler(int sig) {
 }
 
 // Simply read remaining request headers and print them
-void read_requesthdrs(rio_t *rp) {
-  char buf[MAXLINE];
+void read_requesthdrs(rio_t *rp, int *content_length) {
+  char buf[MAXLINE], *p;
 
   do {
     Rio_readlineb(rp, buf, MAXLINE);
+    if ((p = strstr(buf, "Content-Length:")) != NULL) {
+      *content_length = strtol(p + 16, NULL, 10);
+    }
     printf("%s", buf);
   } while (strcmp(buf, "\r\n"));
 }
