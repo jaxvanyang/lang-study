@@ -34,6 +34,7 @@ void serve_dynamic(int fd, char *filename, char *cgiargs, char *request_method);
 void clienterror(int fd, char *cause, char *errnum, char *shortmsg,
                  char *longmsg);
 void sigchld_handler(int sig);
+void sigpipe_handler(int sig);
 
 int main(int argc, char **argv) {
   int listenfd, connfd;
@@ -48,6 +49,8 @@ int main(int argc, char **argv) {
   }
 
   Signal(SIGCHLD, sigchld_handler);  // Reap dead child processes
+  // Ignore broken pipe errors for connection close
+  Signal(SIGPIPE, sigpipe_handler);
 
   listenfd = Open_listenfd(argv[1]);
   clientlen = sizeof(clientaddr);
@@ -158,6 +161,7 @@ void doit(int fd) {
     cgiargs[content_length] = '\0';
   }
 
+  // Sleep(5);         // Test connection close
   if (is_static) {  // Serve static content
     if (!(S_ISREG(sbuf.st_mode) && (S_IRUSR & sbuf.st_mode))) {
       clienterror(fd, filename, "403", "Forbidden",
@@ -216,6 +220,14 @@ void sigchld_handler(int sig) {
 
   // Restore previous environment
   Sigprocmask(SIG_SETMASK, &prev_set, NULL);
+  errno = olderrnor;
+}
+
+void sigpipe_handler(int sig) {
+  int olderrnor = errno;
+
+  Sio_puts("SIGPIPE caught\n");
+
   errno = olderrnor;
 }
 
@@ -315,6 +327,7 @@ int simplify_uri(char *uri) {
 void serve_static(int fd, char *filename, size_t filesize,
                   char *request_method) {
   int srcfd;
+  size_t n;
   char *srcp, filetype[MAXTYPE], buf[MAXBUF];
 
   // Send response headers to client
@@ -326,7 +339,15 @@ void serve_static(int fd, char *filename, size_t filesize,
           "Content-length: %ld\r\n"
           "Content-type: %s\r\n\r\n",
           filesize, filetype);
-  Rio_writen(fd, buf, strlen(buf));
+  // Rio_writen(fd, buf, strlen(buf));
+  n = strlen(buf);
+  if (rio_writen(fd, buf, n) != n) {
+    if (errno == EPIPE) {  // Client closed connection
+      return;
+    } else {
+      unix_error("rio_writen error");
+    }
+  }
   if (!strcasecmp(request_method, "HEAD")) return;
   printf("Response headers:\n%s", buf);
 
@@ -334,7 +355,11 @@ void serve_static(int fd, char *filename, size_t filesize,
   srcfd = Open(filename, O_RDONLY, 0);
   srcp = Mmap(0, filesize, PROT_READ, MAP_PRIVATE, srcfd, 0);
   Close(srcfd);
-  Rio_writen(fd, srcp, filesize);
+  // Rio_writen(fd, srcp, filesize);
+  if (rio_writen(fd, srcp, filesize) != filesize && errno != EPIPE) {
+    unix_error("rio_writen error");
+  }
+  // Client may close too early here, but later operations are the same
   Munmap(srcp, filesize);
 }
 
@@ -357,12 +382,19 @@ void get_filetype(char *filename, char *filetype) {
 void serve_dynamic(int fd, char *filename, char *cgiargs,
                    char *request_method) {
   char buf[MAXLINE], *emptylist[] = {NULL};
+  size_t n;
 
   // Send first part of HTTP response headers
   sprintf(buf, "HTTP/1.0 200 OK\r\n");
-  Rio_writen(fd, buf, strlen(buf));
+  n = strlen(buf);
+  if (rio_writen(fd, buf, n) != n && errno != EPIPE) {
+    unix_error("rio_writen error");
+  }
   sprintf(buf, "Server: Tiny Web Server\r\n");
-  Rio_writen(fd, buf, strlen(buf));
+  n = strlen(buf);
+  if (rio_writen(fd, buf, n) != n && errno != EPIPE) {
+    unix_error("rio_writen error");
+  }
 
   if (Fork() == 0) {  // Child process
     setenv("QUERY_STRING", cgiargs, 1);
