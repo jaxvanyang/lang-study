@@ -395,7 +395,8 @@ void sigchld_handler(int sig) {
       Sigprocmask(SIG_BLOCK, &mask, &prev);
       // it's ok to call non-async-safe function here,
       // because all signals are blocked
-      // printf("Job [%d] (%d) exited with %d\n", job->jid, pid, WEXITSTATUS(status));
+      // printf("Job [%d] (%d) exited with %d\n", job->jid, pid,
+      // WEXITSTATUS(status));
       deletejob(jobs, pid);
       Sigprocmask(SIG_SETMASK, &prev, NULL);
     } else if (WIFSIGNALED(status)) {
@@ -425,7 +426,7 @@ void sigchld_handler(int sig) {
     }
   }
 
-  // if (errno != ECHILD) unix_error("waitpid error");
+  if (errno != ECHILD && errno != EINTR) unix_error("waitpid error");
 
   errno = olderrno;
 }
@@ -464,7 +465,7 @@ void sigint_handler(int sig) {
 void sigtstp_handler(int sig) {
   int olderrno = errno;
   sigset_t mask, prev;
-  
+
   // block all signals to synchronize stream
   Sigfillset(&mask);
   Sigprocmask(SIG_BLOCK, &mask, &prev);
