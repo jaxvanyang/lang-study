@@ -53,8 +53,9 @@ int main(int argc, char **argv) {
   Signal(SIGPIPE, sigpipe_handler);
 
   listenfd = Open_listenfd(argv[1]);
-  clientlen = sizeof(clientaddr);
+  printf("Running on http://localhost:%s\n", argv[1]);
   while (1) {
+    clientlen = sizeof(clientaddr);
     connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen);
     Getnameinfo((SA *)&clientaddr, clientlen, hostname, MAXLINE, port, MAXLINE,
                 0);
