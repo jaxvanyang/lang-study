@@ -1,36 +1,30 @@
+# directories
+CSRC_DIR := csrc
+CCSRC_DIR := ccsrc
 BUILD_DIR := build
-CBUILD_DIR := $(BUILD_DIR)/c
-CCBUILD_DIR := $(BUILD_DIR)/cc
-SRC_DIR := src
-MAIN_DIR := main
+CBUILD_DIR := $(BUILD_DIR)/$(CSRC_DIR)
+CCBUILD_DIR := $(BUILD_DIR)/$(CCSRC_DIR)
 BIN_DIR := bin
-LIB_DIR := lib
-LIBS := linear_algebra sort
-LIBS := $(LIBS:%=$(LIB_DIR)/lib%.a)
+CLIB_DIR := clib
+CCLIB_DIR := cclib
+CLIB_BUILD := $(BUILD_DIR)/$(CLIB_DIR)
+CCLIB_BUILD := $(BUILD_DIR)/$(CCLIB_DIR)
 
 # source files
-CMAINS := $(shell find $(MAIN_DIR) -name '*.c')
-CCMAINS := $(shell find $(MAIN_DIR) -name '*.cc')
-CSRCS := $(shell find $(SRC_DIR) -name '*.c')
-CCSRCS := $(shell find $(SRC_DIR) -name '*.cc')
+CSRCS := $(shell find $(CSRC_DIR) -name '*.c')
+CCSRCS := $(shell find $(CCSRC_DIR) -name '*.cc')
 
 # binary files
-COBJS := $(CMAINS:%.c=$(CBUILD_DIR)/%.o)
-CCOBJS := $(CCMAINS:%.cc=$(CCBUILD_DIR)/%.o)
+COBJS += $(CSRCS:%.c=$(BUILD_DIR)/%.o)
+CCOBJS += $(CCSRCS:%.cc=$(BUILD_DIR)/%.o)
 OBJS := $(COBJS) $(CCOBJS)
-# only make executable for main files
-MAINS := $(OBJS:%.o=%)
-# add other binary files
-CCOBJS += $(CCSRCS:%.cc=$(CCBUILD_DIR)/%.o)
-COBJS += $(CSRCS:%.c=$(CBUILD_DIR)/%.o)
-OBJS := $(COBJS) $(CCOBJS)
+OUTS := $(OBJS:%.o=%)
 
 CPPFLAGS := $(INC_FLAGS) -Wall -g -Iinclude
 
-ALL := $(LIBS) $(MAINS)
-all: $(ALL)
+all: $(OUTS)
 	mkdir -p $(BIN_DIR)
-	cp $(MAINS) $(BIN_DIR)
+	cp $(OUTS) $(BIN_DIR)
 
 # C executable
 $(CBUILD_DIR)/%: $(CBUILD_DIR)/%.o
@@ -41,36 +35,35 @@ $(CCBUILD_DIR)/%: $(CCBUILD_DIR)/%.o
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
 # C object files
-$(CBUILD_DIR)/%.o: %.c
+$(BUILD_DIR)/%.o: %.c
 	mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 # C++ object files
-$(CCBUILD_DIR)/%.o: %.cc
+$(BUILD_DIR)/%.o: %.cc
 	mkdir -p $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-# library rules
+# library rules begin
 
-COBJS_DIR := $(CBUILD_DIR)/$(SRC_DIR)
-CCOBJS_DIR := $(CCBUILD_DIR)/$(SRC_DIR)
-
-$(LIB_DIR)/liblinear_algebra.a: $(CCOBJS_DIR)/linear_algebra.o
+$(CCLIB_BUILD)/liblinear_algebra.a: $(CCLIB_DIR)/linear_algebra.o
+	mkdir -p $(dir $@)
 	ar rcs $@ $^
 
-$(LIB_DIR)/libsort.a: $(CCOBJS_DIR)/sort.o
+$(CCLIB_BUILD)/libsort.a: $(CCLIB_DIR)/sort.o
+	mkdir -p $(dir $@)
 	ar rcs $@ $^
 
 # library rules end
 
-# executable that uses library
+# executable that uses library begin
 
-$(CCBUILD_DIR)/$(MAIN_DIR)/linear_main: $(CCBUILD_DIR)/$(MAIN_DIR)/linear_main.o \
-$(LIB_DIR)/liblinear_algebra.a
+$(CCBUILD_DIR)/linear_main: $(CCBUILD_DIR)/linear_main.o \
+$(CCLIB_BUILD)/liblinear_algebra.a
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
 # executable that uses library end
 
 .PHONY: clean
 clean:
-	-rm -r $(BUILD_DIR) $(BIN_DIR) $(LIB_DIR)/*
+	-rm -r $(BUILD_DIR) $(BIN_DIR) $(CLIB_DIR)/*.o $(CCLIB_DIR)/*.o
