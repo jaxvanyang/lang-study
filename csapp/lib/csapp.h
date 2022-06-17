@@ -44,10 +44,10 @@ typedef struct sockaddr SA;
 /* $begin rio_t */
 #define RIO_BUFSIZE 8192
 typedef struct {
-    int rio_fd;                /* Descriptor for this internal buf */
-    int rio_cnt;               /* Unread bytes in internal buf */
-    char *rio_bufptr;          /* Next unread byte in internal buf */
-    char rio_buf[RIO_BUFSIZE]; /* Internal buffer */
+	int rio_fd;                /* Descriptor for this internal buf */
+	int rio_cnt;               /* Unread bytes in internal buf */
+	char *rio_bufptr;          /* Next unread byte in internal buf */
+	char rio_buf[RIO_BUFSIZE]; /* Internal buffer */
 } rio_t;
 /* $end rio_t */
 
@@ -107,7 +107,7 @@ ssize_t Write(int fd, const void *buf, size_t count);
 off_t Lseek(int fildes, off_t offset, int whence);
 void Close(int fd);
 int Select(int  n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, 
-	   struct timeval *timeout);
+		struct timeval *timeout);
 int Dup2(int fd1, int fd2);
 void Stat(const char *filename, struct stat *buf);
 void Fstat(int fd, struct stat *buf) ;
@@ -146,9 +146,9 @@ void Connect(int sockfd, struct sockaddr *serv_addr, int addrlen);
 
 /* Protocol independent wrappers */
 void Getaddrinfo(const char *node, const char *service, 
-                 const struct addrinfo *hints, struct addrinfo **res);
+		const struct addrinfo *hints, struct addrinfo **res);
 void Getnameinfo(const struct sockaddr *sa, socklen_t salen, char *host, 
-                 size_t hostlen, char *serv, size_t servlen, int flags);
+		size_t hostlen, char *serv, size_t servlen, int flags);
 void Freeaddrinfo(struct addrinfo *res);
 void Inet_ntop(int af, const void *src, char *dst, socklen_t size);
 void Inet_pton(int af, const char *src, void *dst); 
@@ -159,7 +159,7 @@ struct hostent *Gethostbyaddr(const char *addr, int len, int type);
 
 /* Pthreads thread control wrappers */
 void Pthread_create(pthread_t *tidp, pthread_attr_t *attrp, 
-		    void * (*routine)(void *), void *argp);
+		void * (*routine)(void *), void *argp);
 void Pthread_join(pthread_t tid, void **thread_return);
 void Pthread_cancel(pthread_t tid);
 void Pthread_detach(pthread_t tid);
