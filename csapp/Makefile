@@ -25,6 +25,12 @@ $(BUILD_DIR)/%.o: %.c
 	mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
+# Rules for dependency-specfic binary
+
+$(BUILD_DIR)/%/echoservert_pre: $(BUILD_DIR)/%/echoservert_pre.o \
+$(BUILD_DIR)/libcsapp.so $(BUILD_DIR)/libsbuf.a
+	$(CC) $^ -o $@ $(LDFLAGS)
+
 # Rules for libraries
 
 # libcsapp.so
