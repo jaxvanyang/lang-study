@@ -1,1 +1,9 @@
 This is an x86-64 bomb for self-study students. 
+
+## Test
+
+The [bomb](bomb) binary expects 6 lines of input from stdin. You should disassemble the binary and find appropriate inputs to pass the test.
+
+```bash
+./bomb [ans.txt]
+```
