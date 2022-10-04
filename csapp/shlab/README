@@ -20,3 +20,18 @@ mysplit.c	# Forks a child that spins for <n> seconds
 mystop.c        # Spins for <n> seconds and sends SIGTSTP to itself
 myint.c         # Spins for <n> seconds and sends SIGINT to itself
 
+# Test
+
+Test all traces:
+
+```bash
+for trace in trace*.txt; do
+  ./sdriver.pl -vgs ./tsh -t "$trace"
+done
+```
+
+You should compare the output of your shell with the output of the reference shell.
+
+```bash
+./sdriver.pl -vgs ./tshref -t trace16.txt
+```
