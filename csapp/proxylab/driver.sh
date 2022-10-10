@@ -80,9 +80,7 @@ function clear_dirs {
 #
 function wait_for_port_use() {
     timeout_count="0"
-    portsinuse=`netstat --numeric-ports --numeric-hosts -a --protocol=tcpip \
-        | grep tcp | cut -c21- | cut -d':' -f2 | cut -d' ' -f1 \
-        | grep -E "[0-9]+" | uniq | tr "\n" " "`
+    portsinuse=`ss -tln | cut -c 36- | cut -d ' ' -f 1 | grep -E '[0-9]+' | sort -n | uniq | tr "\n" " "`
 
     echo "${portsinuse}" | grep -wq "${1}"
     while [ "$?" != "0" ]
@@ -93,9 +91,7 @@ function wait_for_port_use() {
         fi
 
         sleep 1
-        portsinuse=`netstat --numeric-ports --numeric-hosts -a --protocol=tcpip \
-            | grep tcp | cut -c21- | cut -d':' -f2 | cut -d' ' -f1 \
-            | grep -E "[0-9]+" | uniq | tr "\n" " "`
+        portsinuse=`ss -tln | cut -c 36- | cut -d ' ' -f 1 | grep -E '[0-9]+' | sort -n | uniq | tr "\n" " "`
         echo "${portsinuse}" | grep -wq "${1}"
     done
 }
@@ -112,9 +108,7 @@ function free_port {
 
     while [ TRUE ] 
     do
-        portsinuse=`netstat --numeric-ports --numeric-hosts -a --protocol=tcpip \
-            | grep tcp | cut -c21- | cut -d':' -f2 | cut -d' ' -f1 \
-            | grep -E "[0-9]+" | uniq | tr "\n" " "`
+        portsinuse=`ss -tln | cut -c 36- | cut -d ' ' -f 1 | grep -E '[0-9]+' | sort -n | uniq | tr "\n" " "`
 
         echo "${portsinuse}" | grep -wq "${port}"
         if [ "$?" == "0" ]; then
